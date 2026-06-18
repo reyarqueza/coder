@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { CookieConsent } from "@/components/cookie-consent";
 import { LoggedOutFooter } from "@/components/logged-out-footer";
 import { LoggedOutHeader } from "@/components/logged-out-header";
+import { PageContainer } from "@/components/page-container";
 
 export default function AuthLayout({
   children,
@@ -10,17 +11,19 @@ export default function AuthLayout({
 }) {
   return (
     <>
-      <LoggedOutHeader />
-      {children}
-      <Suspense
-        fallback={
-          <footer className="border-t">
-            <div className="mx-auto h-20 max-w-6xl" />
-          </footer>
-        }
-      >
-        <LoggedOutFooter />
-      </Suspense>
+      <div className="flex w-full flex-1 flex-col">
+        <LoggedOutHeader />
+        {children}
+        <Suspense
+          fallback={
+            <footer className="w-full border-t">
+              <PageContainer className="h-20" />
+            </footer>
+          }
+        >
+          <LoggedOutFooter />
+        </Suspense>
+      </div>
       <CookieConsent />
     </>
   );
