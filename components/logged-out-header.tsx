@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { PageContainer } from "@/components/page-container";
 
 export function LoggedOutHeader() {
   return (
-    <header className="border-b">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
+    <header className="w-full border-b">
+      <PageContainer className="flex h-14 items-center justify-between">
         <Link
           href="/login"
           className="text-lg font-semibold tracking-tight transition-opacity hover:opacity-80"
@@ -16,7 +17,7 @@ export function LoggedOutHeader() {
         >
           Login
         </Link>
-      </div>
+      </PageContainer>
     </header>
   );
 }

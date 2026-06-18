@@ -1,8 +1,7 @@
 "use client";
 
-"use client";
-
 import Link from "next/link";
+import { PageContainer } from "@/components/page-container";
 
 const footerLinks = [
   { href: "/privacy", label: "Privacy Policy" },
@@ -14,8 +13,8 @@ export function LoggedOutFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row sm:px-6">
+    <footer className="w-full border-t">
+      <PageContainer className="flex flex-col items-center justify-between gap-4 py-8 sm:flex-row">
         <p className="text-sm text-muted-foreground">
           © {year} Coder Bahamuto. All rights reserved.
         </p>
@@ -33,7 +32,7 @@ export function LoggedOutFooter() {
             ))}
           </ul>
         </nav>
-      </div>
+      </PageContainer>
     </footer>
   );
 }

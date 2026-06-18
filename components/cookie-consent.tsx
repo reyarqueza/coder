@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { PageContainer } from "@/components/page-container";
 
 const CONSENT_KEY = "coder-bahamuto-cookie-consent";
 
@@ -47,7 +48,7 @@ export function CookieConsent() {
       aria-describedby="cookie-consent-description"
       className="fixed inset-x-0 bottom-0 z-50 border-t bg-background/95 p-4 shadow-lg backdrop-blur-sm sm:p-6"
     >
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <PageContainer className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="space-y-2">
           <h2 id="cookie-consent-title" className="text-sm font-semibold">
             We use cookies
@@ -73,7 +74,7 @@ export function CookieConsent() {
             Accept all
           </Button>
         </div>
-      </div>
+      </PageContainer>
     </div>
   );
 }
