@@ -41,7 +41,7 @@ export default function PrivacyPage() {
       <h2>Contact</h2>
       <p>
         For privacy-related questions, contact us at{" "}
-        <a href="mailto:privacy@coderbahamuto.com">privacy@coderbahamuto.com</a>
+        <a href="mailto:privacy@coder.bahamuto.com">privacy@coder.bahamuto.com</a>
         .
       </p>
     </LegalPage>

@@ -49,7 +49,7 @@ export default function CookiesPage() {
       <h2>Contact</h2>
       <p>
         Questions about cookies? Email{" "}
-        <a href="mailto:privacy@coderbahamuto.com">privacy@coderbahamuto.com</a>
+        <a href="mailto:privacy@coder.bahamuto.com">privacy@coder.bahamuto.com</a>
         .
       </p>
     </LegalPage>

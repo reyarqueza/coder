@@ -52,7 +52,7 @@ export default function TermsPage() {
       <h2>Contact</h2>
       <p>
         Questions about these terms? Email{" "}
-        <a href="mailto:legal@coderbahamuto.com">legal@coderbahamuto.com</a>.
+        <a href="mailto:legal@coder.bahamuto.com">legal@coder.bahamuto.com</a>.
       </p>
     </LegalPage>
   );
