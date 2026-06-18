@@ -9,12 +9,26 @@ import {
 
 export default function LoginPage() {
   return (
-    <main className="flex flex-1 items-center justify-center p-6">
-      <Card className="w-full max-w-md">
+    <main className="flex flex-1 flex-col items-center justify-center gap-12 px-4 py-16 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-16 lg:px-8">
+      <section className="max-w-xl text-center lg:max-w-2xl lg:text-left">
+        <p className="text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+          Coder Bahamuto
+        </p>
+        <h1 className="mt-6 text-2xl font-semibold tracking-tight sm:text-3xl">
+          Practice your front end skills!
+        </h1>
+        <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+          In the age of AI, agents will be writing code for you, so how can you
+          be the Reviewer in the middle if you forgot how to code? Use Coder
+          Bahamuto to keep your coding skills intact!
+        </p>
+      </section>
+
+      <Card className="w-full max-w-md shrink-0">
         <CardHeader>
-          <CardTitle>coder</CardTitle>
+          <CardTitle>Sign in</CardTitle>
           <CardDescription>
-            Sign in with GitHub to access your dashboard.
+            Sign in with GitHub to start practicing.
           </CardDescription>
         </CardHeader>
         <CardContent>

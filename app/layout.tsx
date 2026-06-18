@@ -14,8 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "coder",
-  description: "Next.js app with Auth.js and Neon Postgres",
+  title: "Coder Bahamuto",
+  description:
+    "Practice your front-end skills and stay sharp as the reviewer in the age of AI.",
 };
 
 export default function RootLayout({
