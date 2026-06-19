@@ -17,7 +17,7 @@ export default function AuthLayout({
         <Suspense
           fallback={
             <footer className="w-full border-t">
-              <PageContainer className="h-20" />
+              <PageContainer className="h-20">{null}</PageContainer>
             </footer>
           }
         >
