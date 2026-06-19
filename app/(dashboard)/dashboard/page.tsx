@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { AppHeader } from "@/components/app-header";
-import { WelcomeCard } from "@/components/welcome-card";
+import { DashboardToolbar } from "@/components/dashboard-toolbar";
 
 async function DashboardContent() {
   const session = await auth();
@@ -14,7 +14,7 @@ async function DashboardContent() {
     <>
       <AppHeader name={name} email={email} image={image} />
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-6">
-        <WelcomeCard name={name} email={email} image={image} />
+        <DashboardToolbar />
       </main>
     </>
   );
