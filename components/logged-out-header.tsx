@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageContainer } from "@/components/page-container";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function LoggedOutHeader() {
   return (
@@ -11,12 +12,15 @@ export function LoggedOutHeader() {
         >
           Coder Bahamuto
         </Link>
-        <Link
-          href="/login"
-          className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          Login
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/login"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Login
+          </Link>
+          <ThemeToggle />
+        </div>
       </PageContainer>
     </header>
   );
