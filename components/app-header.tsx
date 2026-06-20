@@ -25,9 +25,9 @@ export function AppHeader({ name, email, image }: AppHeaderProps) {
   const initials = getInitials(name, email);
 
   return (
-    <header className="w-full border-b">
+    <header className="w-full shrink-0 border-b">
       <PageContainer className="flex h-14 items-center justify-between">
-        <span className="text-lg font-semibold tracking-tight">coder</span>
+        <span className="text-lg font-semibold tracking-tight">Coder Bahamuto</span>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <Avatar size="sm">

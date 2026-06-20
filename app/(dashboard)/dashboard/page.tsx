@@ -1,33 +1,29 @@
+"use client";
+
 import { Suspense } from "react";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
-import { AppHeader } from "@/components/app-header";
+import { DashboardIde } from "@/components/dashboard-ide";
 import { DashboardToolbar } from "@/components/dashboard-toolbar";
-
-async function DashboardContent() {
-  const session = await auth();
-  if (!session?.user) redirect("/login");
-
-  const { name, email, image } = session.user;
-
-  return (
-    <>
-      <AppHeader name={name} email={email} image={image} />
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-6">
-        <DashboardToolbar />
-      </main>
-    </>
-  );
-}
 
 function DashboardFallback() {
   return (
-    <>
-      <AppHeader />
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-6">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="shrink-0 border-b p-4">
         <p className="text-muted-foreground">Loading…</p>
-      </main>
-    </>
+      </div>
+    </div>
+  );
+}
+
+function DashboardContent() {
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="shrink-0 border-b p-4">
+        <DashboardToolbar />
+      </div>
+      <div className="min-h-0 flex-1">
+        <DashboardIde />
+      </div>
+    </div>
   );
 }
 
