@@ -1,15 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Synth } from "beepbox";
 import { Pause, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DASHBOARD_SONG } from "@/lib/beepbox/dashboard-song";
 
-export function DashboardMusicPlayer() {
+type DashboardMusicPlayerProps = {
+  playing: boolean;
+  started: boolean;
+  onPlayingChange: (playing: boolean) => void;
+  onStartedChange: (started: boolean) => void;
+};
+
+export function DashboardMusicPlayer({
+  playing,
+  started,
+  onPlayingChange,
+  onStartedChange,
+}: DashboardMusicPlayerProps) {
   const synthRef = useRef<Synth | null>(null);
-  const [started, setStarted] = useState(false);
-  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     const synth = new Synth(DASHBOARD_SONG);
@@ -26,8 +36,8 @@ export function DashboardMusicPlayer() {
     if (!synth) return;
 
     synth.play();
-    setStarted(true);
-    setPlaying(true);
+    onStartedChange(true);
+    onPlayingChange(true);
   }
 
   function handleTogglePlayPause() {
@@ -36,10 +46,10 @@ export function DashboardMusicPlayer() {
 
     if (synth.playing) {
       synth.pause();
-      setPlaying(false);
+      onPlayingChange(false);
     } else {
       synth.play();
-      setPlaying(true);
+      onPlayingChange(true);
     }
   }
 
