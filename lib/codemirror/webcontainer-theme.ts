@@ -1,7 +1,7 @@
 import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
 import { tags as t } from "@lezer/highlight";
 import { EditorView } from "@codemirror/view";
-import { workspaceSyntax } from "@/lib/workspace/colors";
+import { workspaceSyntax, WORKSPACE_UI_FONT_SIZE } from "@/lib/workspace/colors";
 
 export const webcontainerEditorTheme = EditorView.theme({
   "&": {
@@ -12,6 +12,9 @@ export const webcontainerEditorTheme = EditorView.theme({
     overflow: "hidden",
     color: "var(--workspace-fg)",
     backgroundColor: "var(--workspace-bg)",
+    fontFamily: "var(--font-mono)",
+    fontSize: `var(--workspace-ui-font-size, ${WORKSPACE_UI_FONT_SIZE}px)`,
+    lineHeight: "var(--workspace-line-height)",
   },
   ".cm-scroller": {
     overflowX: "hidden",
@@ -22,12 +25,12 @@ export const webcontainerEditorTheme = EditorView.theme({
     maxHeight: "100%",
     scrollbarGutter: "stable",
     fontFamily: "var(--font-mono)",
-    fontSize: "var(--workspace-font-size)",
+    fontSize: `var(--workspace-ui-font-size, ${WORKSPACE_UI_FONT_SIZE}px)`,
     lineHeight: "var(--workspace-line-height)",
   },
   ".cm-content": {
     caretColor: "var(--workspace-cursor)",
-    padding: "4px 0",
+    padding: "0",
   },
   ".cm-line": {
     padding: "0 2px 0 6px",
@@ -43,6 +46,7 @@ export const webcontainerEditorTheme = EditorView.theme({
     backgroundColor: "transparent",
     borderRight: "none",
     color: "var(--workspace-fg-muted)",
+    fontSize: `var(--workspace-ui-font-size, ${WORKSPACE_UI_FONT_SIZE}px)`,
   },
   ".cm-activeLineGutter": {
     backgroundColor: "transparent",

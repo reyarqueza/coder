@@ -38,6 +38,7 @@ type ContextMenuState = {
 
 const fileButtonClass = cn(
   "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left",
+  workspaceUi.fontMono,
   workspaceUi.textMuted,
   workspaceUi.bgHover,
   workspaceUi.hoverText,
@@ -173,7 +174,7 @@ function FileTreeContextMenu({
       />
       <div
         className={cn(
-          "fixed z-50 min-w-36 rounded-lg border p-1 shadow-lg",
+          "workspace-mono-text fixed z-50 min-w-36 rounded-lg border p-1 shadow-lg",
           workspaceUi.bg,
           workspaceUi.border,
         )}

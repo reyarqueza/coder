@@ -7,7 +7,14 @@ import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
 import { WorkspacePanel } from "@/components/workspace/workspace-panel";
-import { getTerminalTheme, WORKSPACE_FONT_SIZE, workspaceUi } from "@/lib/workspace/colors";
+import {
+  getTerminalTheme,
+  getWorkspaceMonoFontFamily,
+  syncWorkspaceUiFontSize,
+  WORKSPACE_FONT_SIZE,
+  WORKSPACE_LINE_HEIGHT,
+  workspaceUi,
+} from "@/lib/workspace/colors";
 import { cn } from "@/lib/utils";
 
 export function TerminalPanel() {
@@ -29,8 +36,9 @@ export function TerminalPanel() {
 
     const terminal = new Terminal({
       convertEol: true,
-      fontFamily: "var(--font-mono)",
+      fontFamily: getWorkspaceMonoFontFamily(),
       fontSize: WORKSPACE_FONT_SIZE,
+      lineHeight: WORKSPACE_LINE_HEIGHT,
       theme: getTerminalTheme(isDark),
     });
     const fitAddon = new FitAddon();
@@ -38,6 +46,11 @@ export function TerminalPanel() {
     terminal.loadAddon(fitAddon);
     terminal.open(containerRef.current);
     fitAddon.fit();
+
+    requestAnimationFrame(() => {
+      fitAddon.fit();
+      syncWorkspaceUiFontSize();
+    });
 
     terminalRef.current = terminal;
     fitAddonRef.current = fitAddon;

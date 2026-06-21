@@ -93,6 +93,7 @@
   --workspace-active-line: rgba(0, 0, 0, 0.04);
   --workspace-cursor: #171717;
   --workspace-font-size: 13px;
+  --workspace-ui-font-size: 11px;
   --workspace-line-height: 1.5;
 }
 
@@ -160,6 +161,13 @@
     scrollbar-gutter: stable;
     scrollbar-width: thin;
     scrollbar-color: var(--workspace-border) transparent;
+  }
+
+  .workspace-mono-text,
+  .workspace-mono-text button {
+    font-family: var(--font-mono);
+    font-size: var(--workspace-ui-font-size);
+    line-height: var(--workspace-line-height);
   }
 
   .workspace-scroll::-webkit-scrollbar,
