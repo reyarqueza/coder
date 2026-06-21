@@ -36,7 +36,7 @@ type ContextMenuState = {
 };
 
 const fileButtonClass = cn(
-  "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm",
+  "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left",
   workspaceUi.textMuted,
   workspaceUi.bgHover,
   workspaceUi.hoverText,
@@ -133,7 +133,7 @@ function CreateEntryInput({
           }}
           placeholder={kind === "file" ? "filename.js" : "folder-name"}
           className={cn(
-            "min-w-0 flex-1 rounded border bg-transparent px-1.5 py-0.5 text-sm outline-none",
+            "min-w-0 flex-1 rounded border bg-transparent px-1.5 py-0.5 outline-none",
             workspaceUi.border,
             workspaceUi.text,
             workspaceUi.focusBorder,
@@ -183,7 +183,7 @@ function FileTreeContextMenu({
             <button
               type="button"
               className={cn(
-                "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm",
+                "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left",
                 workspaceUi.text,
                 workspaceUi.bgHover,
               )}
@@ -198,7 +198,7 @@ function FileTreeContextMenu({
             <button
               type="button"
               className={cn(
-                "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm",
+                "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left",
                 workspaceUi.text,
                 workspaceUi.bgHover,
               )}
@@ -210,14 +210,14 @@ function FileTreeContextMenu({
               <FolderPlus className="size-4" />
               New Folder
             </button>
-            <div className="my-1 h-px bg-white/10" />
+            <div className={cn("my-1 h-px", workspaceUi.divider)} />
           </>
         ) : null}
         {!protectedEntry ? (
           <button
             type="button"
             className={cn(
-              "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm",
+              "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left",
               workspaceUi.textError,
               "hover:bg-[#f14c4c]/10",
             )}
@@ -477,7 +477,7 @@ export function FileTree() {
       title="Files"
       titleClassName={workspaceUi.text}
       headerExtra={status === "ready" ? toolbar : null}
-      bodyClassName={cn(workspaceUi.bg, workspaceUi.scroll, "font-mono", workspaceUi.text)}
+      bodyClassName={cn(workspaceUi.bg, workspaceUi.scroll, workspaceUi.fontMono, workspaceUi.text)}
     >
       <div className="p-2">
         {actionError ? (

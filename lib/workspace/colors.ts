@@ -11,6 +11,9 @@ export const workspaceSyntax = {
   type: "#4ec9b0",
 } as const;
 
+export const WORKSPACE_FONT_SIZE = 13;
+export const WORKSPACE_LINE_HEIGHT = 1.5;
+
 /** Tailwind class helpers — backgrounds/text follow app light/dark via CSS vars. */
 export const workspaceUi = {
   text: "text-[var(--workspace-fg)]",
@@ -24,6 +27,10 @@ export const workspaceUi = {
   border: "border-[var(--workspace-border)]",
   focusBorder: "focus:border-[#79c0ff]/50",
   scroll: "workspace-scroll min-h-0 overflow-x-hidden overflow-y-auto",
+  fontMono:
+    "font-mono text-[length:var(--workspace-font-size)] leading-[var(--workspace-line-height)]",
+  headerBorder: "border-[var(--workspace-border)]",
+  divider: "bg-[var(--workspace-border)]",
 } as const;
 
 export function getTerminalTheme(isDark: boolean) {

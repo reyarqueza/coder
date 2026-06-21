@@ -92,6 +92,8 @@
   --workspace-selection: #add6ff;
   --workspace-active-line: rgba(0, 0, 0, 0.04);
   --workspace-cursor: #171717;
+  --workspace-font-size: 13px;
+  --workspace-line-height: 1.5;
 }
 
 .dark {

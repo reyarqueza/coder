@@ -22,8 +22,8 @@ export const webcontainerEditorTheme = EditorView.theme({
     maxHeight: "100%",
     scrollbarGutter: "stable",
     fontFamily: "var(--font-mono)",
-    fontSize: "12px",
-    lineHeight: "1.5",
+    fontSize: "var(--workspace-font-size)",
+    lineHeight: "var(--workspace-line-height)",
   },
   ".cm-content": {
     caretColor: "var(--workspace-cursor)",

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { workspaceUi } from "@/lib/workspace/colors";
 
 type WorkspacePanelProps = {
   title: string;
@@ -27,12 +28,12 @@ export function WorkspacePanel({
         className,
       )}
     >
-      <div className="flex h-8 shrink-0 items-center justify-between border-b border-white/5 px-3">
-        <p className={cn("flex items-center gap-1.5 text-sm text-zinc-300", titleClassName)}>
+      <div className={cn("flex h-8 shrink-0 items-center justify-between border-b px-3", workspaceUi.headerBorder)}>
+        <p className={cn("flex items-center gap-1.5 text-sm", workspaceUi.text, titleClassName)}>
           {title}
           {statusDot ? (
             <span
-              className={cn("text-[10px] text-zinc-400", titleClassName && "text-inherit opacity-70")}
+              className={cn("text-[10px]", workspaceUi.textMuted, titleClassName && "text-inherit opacity-70")}
               aria-hidden="true"
             >
               ⬤
