@@ -84,6 +84,33 @@ function applyWorkspaceUiFontSize(px: number) {
   window.dispatchEvent(new CustomEvent(WORKSPACE_UI_FONT_SYNC_EVENT));
 }
 
+/** Shared xterm / file-tree ANSI palette (VS Code Dark+ aligned). */
+export const terminalPalette = {
+  red: "#f14c4c",
+  green: "#7ee787",
+  yellow: "#dcdcaa",
+  blue: "#79c0ff",
+  magenta: "#d670d6",
+  cyan: "#79c0ff",
+  brightMagenta: "#c586c0",
+  dark: {
+    background: "#000000",
+    foreground: "#d4d4d4",
+    cursor: "#aeafad",
+    selectionBackground: "#264f78",
+    brightBlack: "#8b949e",
+    brightWhite: "#ffffff",
+  },
+  light: {
+    background: "#ffffff",
+    foreground: "#171717",
+    cursor: "#171717",
+    selectionBackground: "#add6ff",
+    brightBlack: "#737373",
+    brightWhite: "#000000",
+  },
+} as const;
+
 /** Tailwind class helpers — backgrounds/text follow app light/dark via CSS vars. */
 export const workspaceUi = {
   text: "text-[var(--workspace-fg)]",
@@ -102,30 +129,37 @@ export const workspaceUi = {
   divider: "bg-[var(--workspace-border)]",
 } as const;
 
+/** File tree colors aligned with terminal ls output. */
+export const workspaceFileTree = {
+  fileText: "text-[var(--workspace-tree-file)]",
+  icon: "text-[var(--workspace-tree-icon)]",
+  folderIcon: "text-[var(--workspace-tree-folder-icon)]",
+  directory: "text-[var(--workspace-tree-dir)]",
+} as const;
+
 export function getTerminalTheme(isDark: boolean) {
-  const background = isDark ? "#000000" : "#ffffff";
-  const foreground = isDark ? "#d4d4d4" : "#171717";
+  const theme = isDark ? terminalPalette.dark : terminalPalette.light;
 
   return {
-    background,
-    foreground,
-    cursor: isDark ? "#aeafad" : "#171717",
-    selectionBackground: isDark ? "#264f78" : "#add6ff",
-    black: background,
-    red: "#f14c4c",
-    green: "#7ee787",
-    yellow: "#dcdcaa",
-    blue: "#79c0ff",
-    magenta: "#d670d6",
-    cyan: "#79c0ff",
-    white: foreground,
-    brightBlack: isDark ? "#8b949e" : "#737373",
-    brightRed: "#f14c4c",
-    brightGreen: "#7ee787",
-    brightYellow: "#dcdcaa",
-    brightBlue: "#79c0ff",
-    brightMagenta: "#c586c0",
-    brightCyan: "#79c0ff",
-    brightWhite: isDark ? "#ffffff" : "#000000",
+    background: theme.background,
+    foreground: theme.foreground,
+    cursor: theme.cursor,
+    selectionBackground: theme.selectionBackground,
+    black: theme.background,
+    red: terminalPalette.red,
+    green: terminalPalette.green,
+    yellow: terminalPalette.yellow,
+    blue: terminalPalette.blue,
+    magenta: terminalPalette.magenta,
+    cyan: terminalPalette.cyan,
+    white: theme.foreground,
+    brightBlack: theme.brightBlack,
+    brightRed: terminalPalette.red,
+    brightGreen: terminalPalette.green,
+    brightYellow: terminalPalette.yellow,
+    brightBlue: terminalPalette.blue,
+    brightMagenta: terminalPalette.brightMagenta,
+    brightCyan: terminalPalette.cyan,
+    brightWhite: theme.brightWhite,
   };
 }

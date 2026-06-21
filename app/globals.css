@@ -95,6 +95,10 @@
   --workspace-font-size: 13px;
   --workspace-ui-font-size: 11px;
   --workspace-line-height: 1.5;
+  --workspace-tree-file: #171717;
+  --workspace-tree-icon: #c586c0;
+  --workspace-tree-dir: #9cdcfe;
+  --workspace-tree-folder-icon: #171717;
 }
 
 .dark {
@@ -140,6 +144,10 @@
   --workspace-selection: #264f78;
   --workspace-active-line: rgba(255, 255, 255, 0.04);
   --workspace-cursor: #aeafad;
+  --workspace-tree-file: #ffffff;
+  --workspace-tree-icon: #c586c0;
+  --workspace-tree-dir: #9cdcfe;
+  --workspace-tree-folder-icon: #ffffff;
 }
 
 @layer base {
