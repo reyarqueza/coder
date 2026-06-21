@@ -21,6 +21,7 @@ import {
 } from "@/lib/webcontainer/fs-ops";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
 import { WorkspacePanel } from "@/components/workspace/workspace-panel";
+import { WorkspaceToolbarTooltip } from "@/components/workspace/workspace-toolbar-tooltip";
 import { workspaceUi } from "@/lib/workspace/colors";
 
 type PendingCreate = {
@@ -443,32 +444,34 @@ export function FileTree() {
 
   const toolbar = (
     <div className="flex items-center gap-0.5">
-      <button
-        type="button"
-        title="New file"
-        className={cn(
-          "rounded p-1",
-          workspaceUi.textMuted,
-          workspaceUi.bgHover,
-          workspaceUi.hoverText,
-        )}
-        onClick={() => startCreate(".", "file", 0)}
-      >
-        <FilePlus className="size-3.5" />
-      </button>
-      <button
-        type="button"
-        title="New folder"
-        className={cn(
-          "rounded p-1",
-          workspaceUi.textMuted,
-          workspaceUi.bgHover,
-          workspaceUi.hoverText,
-        )}
-        onClick={() => startCreate(".", "folder", 0)}
-      >
-        <FolderPlus className="size-3.5" />
-      </button>
+      <WorkspaceToolbarTooltip label="New file">
+        <button
+          type="button"
+          className={cn(
+            "rounded p-1",
+            workspaceUi.textMuted,
+            workspaceUi.bgHover,
+            workspaceUi.hoverText,
+          )}
+          onClick={() => startCreate(".", "file", 0)}
+        >
+          <FilePlus className="size-3.5" />
+        </button>
+      </WorkspaceToolbarTooltip>
+      <WorkspaceToolbarTooltip label="New folder">
+        <button
+          type="button"
+          className={cn(
+            "rounded p-1",
+            workspaceUi.textMuted,
+            workspaceUi.bgHover,
+            workspaceUi.hoverText,
+          )}
+          onClick={() => startCreate(".", "folder", 0)}
+        >
+          <FolderPlus className="size-3.5" />
+        </button>
+      </WorkspaceToolbarTooltip>
     </div>
   );
 
