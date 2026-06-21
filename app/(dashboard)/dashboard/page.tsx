@@ -16,11 +16,11 @@ function DashboardFallback() {
 
 function DashboardContent() {
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="shrink-0 border-b p-4">
         <DashboardToolbar />
       </div>
-      <div className="min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <DashboardIde />
       </div>
     </div>

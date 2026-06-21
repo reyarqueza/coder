@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-heading: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -81,6 +81,17 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  --workspace-bg: #ffffff;
+  --workspace-fg: #171717;
+  --workspace-fg-muted: #737373;
+  --workspace-fg-active: #404040;
+  --workspace-bg-active: #dbeafe;
+  --workspace-bg-hover: rgba(0, 0, 0, 0.04);
+  --workspace-border: rgba(0, 0, 0, 0.1);
+  --workspace-selection: #add6ff;
+  --workspace-active-line: rgba(0, 0, 0, 0.04);
+  --workspace-cursor: #171717;
 }
 
 .dark {
@@ -115,6 +126,17 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  --workspace-bg: #000000;
+  --workspace-fg: #d4d4d4;
+  --workspace-fg-muted: #858585;
+  --workspace-fg-active: #c6c6c6;
+  --workspace-bg-active: #264f78;
+  --workspace-bg-hover: rgba(255, 255, 255, 0.04);
+  --workspace-border: rgba(255, 255, 255, 0.1);
+  --workspace-selection: #264f78;
+  --workspace-active-line: rgba(255, 255, 255, 0.04);
+  --workspace-cursor: #aeafad;
 }
 
 @layer base {
@@ -122,9 +144,87 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
   html {
     @apply font-sans;
+  }
+
+  .workspace-scroll {
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: var(--workspace-border) transparent;
+  }
+
+  .workspace-scroll::-webkit-scrollbar,
+  .cm-scroller::-webkit-scrollbar,
+  .xterm-viewport::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .workspace-scroll::-webkit-scrollbar-track,
+  .cm-scroller::-webkit-scrollbar-track,
+  .xterm-viewport::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .workspace-scroll::-webkit-scrollbar-thumb,
+  .cm-scroller::-webkit-scrollbar-thumb,
+  .xterm-viewport::-webkit-scrollbar-thumb {
+    background-color: var(--workspace-border);
+    border-radius: 4px;
+  }
+
+  .workspace-scroll::-webkit-scrollbar-thumb:hover,
+  .cm-scroller::-webkit-scrollbar-thumb:hover,
+  .xterm-viewport::-webkit-scrollbar-thumb:hover {
+    background-color: var(--workspace-fg-muted);
+  }
+
+  .workspace-editor-host,
+  .workspace-terminal-host {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .workspace-terminal-host {
+    padding: 0.5rem;
+  }
+
+  .workspace-preview-frame {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    min-height: 0;
+    min-width: 0;
+    border: 0;
+    background-color: #1e1e1e;
+  }
+
+  .workspace-editor-host .cm-editor {
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden;
+  }
+
+  .workspace-terminal-host .xterm {
+    height: 100%;
+  }
+
+  .workspace-terminal-host .xterm-viewport {
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: var(--workspace-border) transparent;
   }
 }

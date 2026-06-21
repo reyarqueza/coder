@@ -18,9 +18,9 @@ export function DashboardLayoutClient({
 }) {
   return (
     <WebContainerProvider>
-      <div className="flex min-h-svh flex-col">
+      <div className="flex h-svh max-h-svh flex-col overflow-hidden">
         <AppHeader name={user.name} email={user.email} image={user.image} />
-        <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
       </div>
     </WebContainerProvider>
   );
