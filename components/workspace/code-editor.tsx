@@ -12,7 +12,7 @@ import {
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
 import { WorkspacePanel } from "@/components/workspace/workspace-panel";
 import { WorkspaceToolbarTooltip } from "@/components/workspace/workspace-toolbar-tooltip";
-import { workspaceUi } from "@/lib/workspace/colors";
+import { workspaceUi, WORKSPACE_UI_FONT_SYNC_EVENT } from "@/lib/workspace/colors";
 
 function getFileName(path: string) {
   return path.split("/").pop() ?? path;
@@ -113,8 +113,14 @@ export function CodeEditor() {
     });
     resizeObserver.observe(container);
 
+    function onFontSync() {
+      viewRef.current?.requestMeasure();
+    }
+    window.addEventListener(WORKSPACE_UI_FONT_SYNC_EVENT, onFontSync);
+
     return () => {
       resizeObserver.disconnect();
+      window.removeEventListener(WORKSPACE_UI_FONT_SYNC_EVENT, onFontSync);
     };
   }, [selectedPath, status]);
 

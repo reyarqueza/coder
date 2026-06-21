@@ -1,10 +1,16 @@
 "use client";
 
+import { useLayoutEffect } from "react";
 import { WorkspacePanels } from "@/components/workspace/workspace-panels";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
+import { syncWorkspaceUiFontSize } from "@/lib/workspace/colors";
 
 export function DashboardIde() {
   const { status, error } = useWebContainer();
+
+  useLayoutEffect(() => {
+    syncWorkspaceUiFontSize();
+  }, []);
 
   if (status === "error") {
     return (
