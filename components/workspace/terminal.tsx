@@ -7,7 +7,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
 import { WorkspacePanel } from "@/components/workspace/workspace-panel";
-import { getTerminalTheme, workspaceUi } from "@/lib/workspace/colors";
+import { getTerminalTheme, WORKSPACE_FONT_SIZE, workspaceUi } from "@/lib/workspace/colors";
 import { cn } from "@/lib/utils";
 
 export function TerminalPanel() {
@@ -30,7 +30,7 @@ export function TerminalPanel() {
     const terminal = new Terminal({
       convertEol: true,
       fontFamily: "var(--font-mono)",
-      fontSize: 13,
+      fontSize: WORKSPACE_FONT_SIZE,
       theme: getTerminalTheme(isDark),
     });
     const fitAddon = new FitAddon();

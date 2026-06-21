@@ -21,6 +21,7 @@ import {
 } from "@/lib/webcontainer/fs-ops";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
 import { WorkspacePanel } from "@/components/workspace/workspace-panel";
+import { WorkspaceToolbarTooltip } from "@/components/workspace/workspace-toolbar-tooltip";
 import { workspaceUi } from "@/lib/workspace/colors";
 
 type PendingCreate = {
@@ -36,7 +37,7 @@ type ContextMenuState = {
 };
 
 const fileButtonClass = cn(
-  "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm",
+  "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left",
   workspaceUi.textMuted,
   workspaceUi.bgHover,
   workspaceUi.hoverText,
@@ -133,7 +134,7 @@ function CreateEntryInput({
           }}
           placeholder={kind === "file" ? "filename.js" : "folder-name"}
           className={cn(
-            "min-w-0 flex-1 rounded border bg-transparent px-1.5 py-0.5 text-sm outline-none",
+            "min-w-0 flex-1 rounded border bg-transparent px-1.5 py-0.5 outline-none",
             workspaceUi.border,
             workspaceUi.text,
             workspaceUi.focusBorder,
@@ -183,7 +184,7 @@ function FileTreeContextMenu({
             <button
               type="button"
               className={cn(
-                "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm",
+                "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left",
                 workspaceUi.text,
                 workspaceUi.bgHover,
               )}
@@ -198,7 +199,7 @@ function FileTreeContextMenu({
             <button
               type="button"
               className={cn(
-                "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm",
+                "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left",
                 workspaceUi.text,
                 workspaceUi.bgHover,
               )}
@@ -210,14 +211,14 @@ function FileTreeContextMenu({
               <FolderPlus className="size-4" />
               New Folder
             </button>
-            <div className="my-1 h-px bg-white/10" />
+            <div className={cn("my-1 h-px", workspaceUi.divider)} />
           </>
         ) : null}
         {!protectedEntry ? (
           <button
             type="button"
             className={cn(
-              "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm",
+              "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left",
               workspaceUi.textError,
               "hover:bg-[#f14c4c]/10",
             )}
@@ -443,32 +444,34 @@ export function FileTree() {
 
   const toolbar = (
     <div className="flex items-center gap-0.5">
-      <button
-        type="button"
-        title="New file"
-        className={cn(
-          "rounded p-1",
-          workspaceUi.textMuted,
-          workspaceUi.bgHover,
-          workspaceUi.hoverText,
-        )}
-        onClick={() => startCreate(".", "file", 0)}
-      >
-        <FilePlus className="size-3.5" />
-      </button>
-      <button
-        type="button"
-        title="New folder"
-        className={cn(
-          "rounded p-1",
-          workspaceUi.textMuted,
-          workspaceUi.bgHover,
-          workspaceUi.hoverText,
-        )}
-        onClick={() => startCreate(".", "folder", 0)}
-      >
-        <FolderPlus className="size-3.5" />
-      </button>
+      <WorkspaceToolbarTooltip label="New file">
+        <button
+          type="button"
+          className={cn(
+            "rounded p-1",
+            workspaceUi.textMuted,
+            workspaceUi.bgHover,
+            workspaceUi.hoverText,
+          )}
+          onClick={() => startCreate(".", "file", 0)}
+        >
+          <FilePlus className="size-3.5" />
+        </button>
+      </WorkspaceToolbarTooltip>
+      <WorkspaceToolbarTooltip label="New folder">
+        <button
+          type="button"
+          className={cn(
+            "rounded p-1",
+            workspaceUi.textMuted,
+            workspaceUi.bgHover,
+            workspaceUi.hoverText,
+          )}
+          onClick={() => startCreate(".", "folder", 0)}
+        >
+          <FolderPlus className="size-3.5" />
+        </button>
+      </WorkspaceToolbarTooltip>
     </div>
   );
 
@@ -477,7 +480,7 @@ export function FileTree() {
       title="Files"
       titleClassName={workspaceUi.text}
       headerExtra={status === "ready" ? toolbar : null}
-      bodyClassName={cn(workspaceUi.bg, workspaceUi.scroll, "font-mono", workspaceUi.text)}
+      bodyClassName={cn(workspaceUi.bg, workspaceUi.scroll, workspaceUi.fontMono, workspaceUi.text)}
     >
       <div className="p-2">
         {actionError ? (
