@@ -22,7 +22,7 @@ import {
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
 import { WorkspacePanel } from "@/components/workspace/workspace-panel";
 import { WorkspaceToolbarTooltip } from "@/components/workspace/workspace-toolbar-tooltip";
-import { workspaceUi } from "@/lib/workspace/colors";
+import { workspaceFileTree, workspaceUi } from "@/lib/workspace/colors";
 
 type PendingCreate = {
   parentPath: string;
@@ -39,21 +39,18 @@ type ContextMenuState = {
 const fileButtonClass = cn(
   "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left",
   workspaceUi.fontMono,
-  workspaceUi.textMuted,
+  workspaceFileTree.fileText,
   workspaceUi.bgHover,
-  workspaceUi.hoverText,
 );
 
 function FileTreeButton({
   active,
-  dimmed,
   onClick,
   onContextMenu,
   className,
   children,
 }: {
   active?: boolean;
-  dimmed?: boolean;
   onClick: () => void;
   onContextMenu?: (event: React.MouseEvent) => void;
   className?: string;
@@ -66,8 +63,7 @@ function FileTreeButton({
       onContextMenu={onContextMenu}
       className={cn(
         fileButtonClass,
-        active && cn(workspaceUi.bgActive, workspaceUi.text),
-        dimmed && "opacity-50",
+        active && cn(workspaceUi.bgActive, workspaceFileTree.fileText),
         className,
       )}
     >
@@ -108,9 +104,9 @@ function CreateEntryInput({
     <div style={{ paddingLeft: `${depth * 12}px` }} className="px-2 py-0.5">
       <div className="flex items-center gap-2">
         {kind === "file" ? (
-          <FileIcon className={cn("size-4 shrink-0", workspaceUi.textMuted)} />
+          <FileIcon className={cn("size-4 shrink-0", workspaceFileTree.icon)} />
         ) : (
-          <FolderIcon className={cn("size-4 shrink-0", workspaceUi.textMuted)} />
+          <FolderIcon className={cn("size-4 shrink-0", workspaceFileTree.folderIcon)} />
         )}
         <input
           ref={inputRef}
@@ -292,7 +288,7 @@ function FileTreeNode({
           onClick={() => setSelectedPath(entry.path)}
           onContextMenu={(event) => onContextMenu(event, entry)}
         >
-          <FileIcon className="size-4 shrink-0" />
+          <FileIcon className={cn("size-4 shrink-0", workspaceFileTree.icon)} />
           <span className="truncate">{entry.name}</span>
         </FileTreeButton>
       </div>
@@ -303,18 +299,18 @@ function FileTreeNode({
     <div>
       <div style={{ paddingLeft: `${depth * 12}px` }}>
         <FileTreeButton
-          dimmed={isProtectedEntry(entry)}
           onClick={() => setOpen((current) => !current)}
           onContextMenu={(event) => onContextMenu(event, entry)}
         >
           <ChevronRight
             className={cn(
               "size-4 shrink-0 transition-transform",
+              workspaceFileTree.icon,
               open && "rotate-90",
             )}
           />
-          <FolderIcon className="size-4 shrink-0" />
-          <span className="truncate">{entry.name}</span>
+          <FolderIcon className={cn("size-4 shrink-0", workspaceFileTree.folderIcon)} />
+          <span className={cn("truncate", workspaceFileTree.directory)}>{entry.name}</span>
         </FileTreeButton>
       </div>
       {open ? (
