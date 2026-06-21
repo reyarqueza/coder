@@ -11,6 +11,7 @@ import {
 } from "react";
 import type { WebContainer } from "@webcontainer/api";
 import { getWebContainer } from "@/lib/webcontainer/boot-webcontainer";
+import { watchWorkspaceFilesystem } from "@/lib/webcontainer/watch-filesystem";
 
 type BootStatus = "booting" | "installing" | "ready" | "error";
 
@@ -44,6 +45,26 @@ export function WebContainerProvider({ children }: { children: ReactNode }) {
   const refreshFiles = useCallback(() => {
     setRefreshKey((current) => current + 1);
   }, []);
+
+  useEffect(() => {
+    if (!webcontainer || status !== "ready") return;
+
+    return watchWorkspaceFilesystem(webcontainer, {
+      onStructureChange: refreshFiles,
+      onPathRemoved: (removedPath) => {
+        setSelectedPath((current) => {
+          if (!current) return current;
+          if (
+            current === removedPath ||
+            current.startsWith(`${removedPath}/`)
+          ) {
+            return null;
+          }
+          return current;
+        });
+      },
+    });
+  }, [webcontainer, status, refreshFiles]);
 
   useEffect(() => {
     let cancelled = false;
