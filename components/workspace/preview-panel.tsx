@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
+import { WorkspacePanel } from "@/components/workspace/workspace-panel";
 
 export function PreviewPanel() {
   const { webcontainer, status } = useWebContainer();
@@ -33,31 +34,35 @@ export function PreviewPanel() {
 
   if (status !== "ready") {
     return (
-      <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+      <div className="flex h-full min-h-0 items-center justify-center text-sm text-muted-foreground">
         Preview will appear once the environment is ready.
       </div>
     );
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      <div className="flex items-center justify-between border-b px-3 py-2 text-xs text-muted-foreground">
-        <span>Preview</span>
-        {previewError ? (
-          <span className="truncate text-destructive">{previewError}</span>
-        ) : null}
-      </div>
+    <WorkspacePanel
+      title="Preview"
+      bodyClassName="relative min-h-0 bg-[#16181d]"
+      headerExtra={
+        previewError ? (
+          <span className="max-w-[50%] truncate text-xs text-red-400">
+            {previewError}
+          </span>
+        ) : null
+      }
+    >
       {previewUrl ? (
         <iframe
           src={previewUrl}
           title="Preview"
-          className="min-h-0 flex-1 border-0 bg-background"
+          className="workspace-preview-frame"
         />
       ) : (
-        <div className="flex h-full items-center justify-center p-4 text-center text-sm text-muted-foreground">
+        <div className="flex min-h-0 flex-1 items-center justify-center p-4 text-center text-sm text-zinc-500">
           Starting dev server…
         </div>
       )}
-    </div>
+    </WorkspacePanel>
   );
 }

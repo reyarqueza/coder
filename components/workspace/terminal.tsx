@@ -1,27 +1,37 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
+import { WorkspacePanel } from "@/components/workspace/workspace-panel";
+import { getTerminalTheme, workspaceUi } from "@/lib/workspace/colors";
+import { cn } from "@/lib/utils";
 
 export function TerminalPanel() {
   const { webcontainer, status } = useWebContainer();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme !== "light";
   const containerRef = useRef<HTMLDivElement>(null);
   const terminalRef = useRef<Terminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
+
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.options.theme = getTerminalTheme(isDark);
+    }
+  }, [isDark]);
 
   useEffect(() => {
     if (!containerRef.current || !webcontainer || status !== "ready") return;
 
     const terminal = new Terminal({
       convertEol: true,
-      fontFamily: "var(--font-geist-mono), ui-monospace, monospace",
+      fontFamily: "var(--font-mono)",
       fontSize: 13,
-      theme: {
-        background: "transparent",
-      },
+      theme: getTerminalTheme(isDark),
     });
     const fitAddon = new FitAddon();
 
@@ -89,18 +99,15 @@ export function TerminalPanel() {
 
   if (status !== "ready") {
     return (
-      <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+      <div className="flex h-full min-h-0 items-center justify-center text-sm text-muted-foreground">
         Terminal will be available once the environment is ready.
       </div>
     );
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      <div className="border-b px-3 py-2 text-xs text-muted-foreground">
-        Terminal
-      </div>
-      <div ref={containerRef} className="min-h-0 flex-1 p-2" />
-    </div>
+    <WorkspacePanel title="Terminal" bodyClassName={cn(workspaceUi.bg, "relative min-h-0")}>
+      <div ref={containerRef} className="workspace-terminal-host" />
+    </WorkspacePanel>
   );
 }
