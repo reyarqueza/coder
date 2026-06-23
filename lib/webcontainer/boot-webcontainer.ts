@@ -6,6 +6,7 @@ import {
   type WebContainer as WebContainerInstance,
 } from "@webcontainer/api";
 import { initialProjectTree } from "./template";
+import { setupWorkspace } from "./setup-workspace";
 
 let bootPromise: Promise<WebContainerInstance> | null = null;
 
@@ -20,6 +21,7 @@ async function bootWebContainer(): Promise<WebContainerInstance> {
     forwardPreviewErrors: true,
   });
   await instance.mount(initialProjectTree);
+  await setupWorkspace(instance);
   return instance;
 }
 

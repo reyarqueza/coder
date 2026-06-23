@@ -483,14 +483,17 @@ export function FileTree() {
         {actionError ? (
           <p className={cn("mb-2 px-2 text-xs", workspaceUi.textError)}>{actionError}</p>
         ) : null}
-        {status === "booting" || status === "installing" ? (
+        {status === "booting" ? (
           <p className={cn("px-2 text-xs", workspaceUi.textMuted)}>
-            {status === "booting"
-              ? "Booting environment…"
-              : "Installing dependencies…"}
+            Booting environment…
           </p>
         ) : (
           <div className="flex flex-col gap-0.5">
+            {entries.length === 0 && !pendingCreate ? (
+              <p className={cn("px-2 text-xs", workspaceUi.textMuted)}>
+                No files yet. Create one with + or scaffold from the terminal.
+              </p>
+            ) : null}
             {entries.map((entry) => (
               <FileTreeNode
                 key={entry.path}

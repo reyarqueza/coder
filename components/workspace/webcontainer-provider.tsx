@@ -13,7 +13,7 @@ import type { WebContainer } from "@webcontainer/api";
 import { getWebContainer } from "@/lib/webcontainer/boot-webcontainer";
 import { watchWorkspaceFilesystem } from "@/lib/webcontainer/watch-filesystem";
 
-type BootStatus = "booting" | "installing" | "ready" | "error";
+type BootStatus = "booting" | "ready" | "error";
 
 type WebContainerContextValue = {
   webcontainer: WebContainer | null;
@@ -75,23 +75,7 @@ export function WebContainerProvider({ children }: { children: ReactNode }) {
         if (cancelled) return;
 
         setWebcontainer(instance);
-        setStatus("installing");
-
-        const installProcess = await instance.spawn("npm", ["install"]);
-        const exitCode = await installProcess.exit;
-
-        if (cancelled) return;
-
-        if (exitCode !== 0) {
-          setStatus("error");
-          setError("Failed to install project dependencies.");
-          return;
-        }
-
-        void instance.spawn("npm", ["run", "dev"]);
-
         setStatus("ready");
-        setSelectedPath("main.js");
       } catch (bootError) {
         if (cancelled) return;
         setStatus("error");

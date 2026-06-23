@@ -129,9 +129,7 @@ export function CodeEditor() {
       <div className="flex h-full min-h-0 items-center justify-center text-sm text-muted-foreground">
         {status === "booting"
           ? "Booting environment…"
-          : status === "installing"
-            ? "Installing dependencies…"
-            : "Environment unavailable."}
+          : "Environment unavailable."}
       </div>
     );
   }

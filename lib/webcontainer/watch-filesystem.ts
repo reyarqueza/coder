@@ -1,4 +1,5 @@
 import type { WebContainer } from "@webcontainer/api";
+import { isIgnoredWatchPath } from "./ignored-paths";
 
 type WatchWorkspaceFilesystemOptions = {
   onStructureChange: () => void;
@@ -76,6 +77,8 @@ export function watchWorkspaceFilesystem(
 
   async function handleRename(filename: string | Buffer | Uint8Array) {
     const path = normalizeWatchPath(filename);
+    if (isIgnoredWatchPath(path)) return;
+
     hasStructureChange = true;
 
     if (!(await entryExists(webcontainer, path))) {
@@ -96,6 +99,9 @@ export function watchWorkspaceFilesystem(
         scheduleFlush();
         return;
       }
+
+      const path = normalizeWatchPath(filename);
+      if (isIgnoredWatchPath(path)) return;
 
       void handleRename(filename);
     },
