@@ -6,6 +6,7 @@ import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
+import { getWorkspacePathEnv } from "@/lib/webcontainer/setup-workspace";
 import { WorkspacePanel } from "@/components/workspace/workspace-panel";
 import {
   getTerminalTheme,
@@ -66,6 +67,7 @@ export function TerminalPanel() {
           cols: terminal.cols,
           rows: terminal.rows,
         },
+        env: getWorkspacePathEnv(),
       });
 
       if (cancelled) {

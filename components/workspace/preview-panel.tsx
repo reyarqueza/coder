@@ -60,7 +60,7 @@ export function PreviewPanel() {
         />
       ) : (
         <div className="flex min-h-0 flex-1 items-center justify-center p-4 text-center text-sm text-zinc-500">
-          Starting dev server…
+          Run a dev server in the terminal to preview.
         </div>
       )}
     </WorkspacePanel>

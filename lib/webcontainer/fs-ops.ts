@@ -1,4 +1,5 @@
 import type { WebContainer } from "@webcontainer/api";
+import { isHiddenTreeEntry } from "./ignored-paths";
 
 export type FileEntry = {
   name: string;
@@ -36,6 +37,7 @@ export async function readDirectory(
       path: path === "." ? entry.name : `${path}/${entry.name}`,
       isDirectory: entry.isDirectory(),
     }))
+    .filter((entry) => !isHiddenTreeEntry(entry.name))
     .sort((a, b) => {
       if (a.isDirectory !== b.isDirectory) {
         return a.isDirectory ? -1 : 1;
