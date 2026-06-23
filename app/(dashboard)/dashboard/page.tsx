@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import { DashboardIde } from "@/components/dashboard-ide";
 import { DashboardToolbar } from "@/components/dashboard-toolbar";
+import { WorkspaceReadyProvider } from "@/components/workspace/workspace-ready-provider";
 
 function DashboardFallback() {
   return (
@@ -16,14 +17,16 @@ function DashboardFallback() {
 
 function DashboardContent() {
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <div className="shrink-0 border-b p-4">
-        <DashboardToolbar />
-      </div>
+    <WorkspaceReadyProvider>
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        <DashboardIde />
+        <div className="shrink-0 border-b p-4">
+          <DashboardToolbar />
+        </div>
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <DashboardIde />
+        </div>
       </div>
-    </div>
+    </WorkspaceReadyProvider>
   );
 }
 

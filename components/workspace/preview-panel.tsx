@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
+import { useWorkspaceReady } from "@/components/workspace/workspace-ready-provider";
 import { WorkspacePanel } from "@/components/workspace/workspace-panel";
 
 export function PreviewPanel() {
   const { webcontainer, status } = useWebContainer();
+  const { reportPanelReady, resetPanelReady } = useWorkspaceReady();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
 
@@ -26,11 +28,14 @@ export function PreviewPanel() {
       }
     });
 
+    reportPanelReady("preview");
+
     return () => {
       offServerReady();
       offPreviewMessage();
+      resetPanelReady("preview");
     };
-  }, [webcontainer, status]);
+  }, [webcontainer, status, reportPanelReady, resetPanelReady]);
 
   if (status !== "ready") {
     return (

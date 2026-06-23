@@ -12,11 +12,15 @@ import {
 type DashboardBahamutoDancerProps = {
   started: boolean;
   playing: boolean;
+  failed: boolean;
+  succeeded: boolean;
 };
 
 export function DashboardBahamutoDancer({
   started,
   playing,
+  failed,
+  succeeded,
 }: DashboardBahamutoDancerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const directionRef = useRef<1 | -1>(1);
@@ -51,7 +55,7 @@ export function DashboardBahamutoDancer({
   }, [maxStep]);
 
   useEffect(() => {
-    if (!started || !playing) return;
+    if (!started || !playing || failed || succeeded) return;
 
     const intervalId = window.setInterval(() => {
       setPose((current) => (current === "stand" ? "jack" : "stand"));
@@ -76,22 +80,32 @@ export function DashboardBahamutoDancer({
     }, 1000);
 
     return () => window.clearInterval(intervalId);
-  }, [started, playing, maxStep]);
+  }, [started, playing, failed, succeeded, maxStep]);
 
   return (
     <div
       ref={containerRef}
-      aria-hidden
-      className="relative h-16 min-h-16 min-w-0 flex-1 overflow-hidden"
+      className="relative flex h-16 min-h-16 min-w-0 flex-1 items-end overflow-hidden"
     >
       <div
-        className="absolute bottom-0 left-0"
+        className="absolute bottom-0 left-0 flex items-end gap-3"
         style={{ transform: `translateX(${step * BAHAMUTO_STEP_PX}px)` }}
       >
         <CoderBahamutoSprite
-          pose={started ? pose : "stand"}
+          pose={failed || succeeded ? "stand" : started ? pose : "stand"}
           facing={facing}
+          variant={failed ? "fail" : "default"}
         />
+        {failed ? (
+          <span className="pb-1 text-4xl font-black tracking-wider text-red-500">
+            FAIL
+          </span>
+        ) : null}
+        {succeeded ? (
+          <span className="pb-1 text-2xl font-black tracking-wide text-green-500 sm:text-3xl">
+            CONGRATULATIONS!
+          </span>
+        ) : null}
       </div>
     </div>
   );

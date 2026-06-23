@@ -20,6 +20,7 @@ import {
   type FileEntry,
 } from "@/lib/webcontainer/fs-ops";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
+import { useWorkspaceReady } from "@/components/workspace/workspace-ready-provider";
 import { WorkspacePanel } from "@/components/workspace/workspace-panel";
 import { WorkspaceToolbarTooltip } from "@/components/workspace/workspace-toolbar-tooltip";
 import { workspaceFileTree, workspaceUi } from "@/lib/workspace/colors";
@@ -349,6 +350,7 @@ export function FileTree() {
     setSelectedPath,
     refreshFiles,
   } = useWebContainer();
+  const { reportPanelReady, resetPanelReady } = useWorkspaceReady();
   const [entries, setEntries] = useState<FileEntry[]>([]);
   const [pendingCreate, setPendingCreate] = useState<PendingCreate | null>(null);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
@@ -361,16 +363,23 @@ export function FileTree() {
 
     void readDirectory(webcontainer, ".")
       .then((nextEntries) => {
-        if (!cancelled) setEntries(nextEntries);
+        if (!cancelled) {
+          setEntries(nextEntries);
+          reportPanelReady("fileTree");
+        }
       })
       .catch(() => {
-        if (!cancelled) setEntries([]);
+        if (!cancelled) {
+          setEntries([]);
+          reportPanelReady("fileTree");
+        }
       });
 
     return () => {
       cancelled = true;
+      resetPanelReady("fileTree");
     };
-  }, [webcontainer, status, refreshKey]);
+  }, [webcontainer, status, refreshKey, reportPanelReady, resetPanelReady]);
 
   function startCreate(
     parentPath: string,

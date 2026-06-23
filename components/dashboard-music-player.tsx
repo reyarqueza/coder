@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { Synth } from "beepbox";
-import { Pause, Play } from "lucide-react";
+import { Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DASHBOARD_SONG } from "@/lib/beepbox/dashboard-song";
 
@@ -11,6 +11,7 @@ type DashboardMusicPlayerProps = {
   started: boolean;
   onPlayingChange: (playing: boolean) => void;
   onStartedChange: (started: boolean) => void;
+  onBegin?: () => void | Promise<void>;
 };
 
 export function DashboardMusicPlayer({
@@ -18,6 +19,7 @@ export function DashboardMusicPlayer({
   started,
   onPlayingChange,
   onStartedChange,
+  onBegin,
 }: DashboardMusicPlayerProps) {
   const synthRef = useRef<Synth | null>(null);
 
@@ -31,16 +33,28 @@ export function DashboardMusicPlayer({
     };
   }, []);
 
-  function handleStart() {
+  useEffect(() => {
+    const synth = synthRef.current;
+    if (!synth || !started) return;
+
+    if (playing) {
+      synth.play();
+    } else {
+      synth.pause();
+    }
+  }, [playing, started]);
+
+  async function handleBegin() {
     const synth = synthRef.current;
     if (!synth) return;
 
+    await onBegin?.();
     synth.play();
     onStartedChange(true);
     onPlayingChange(true);
   }
 
-  function handleTogglePlayPause() {
+  function handleToggleMute() {
     const synth = synthRef.current;
     if (!synth || !started) return;
 
@@ -58,20 +72,20 @@ export function DashboardMusicPlayer({
       <Button
         type="button"
         disabled={started}
-        onClick={handleStart}
+        onClick={() => void handleBegin()}
         className="bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
       >
-        Start
+        Begin
       </Button>
       <Button
         type="button"
         variant="outline"
         size="icon"
         disabled={!started}
-        onClick={handleTogglePlayPause}
-        aria-label={playing ? "Pause music" : "Play music"}
+        onClick={handleToggleMute}
+        aria-label={playing ? "Mute music" : "Unmute music"}
       >
-        {playing ? <Pause /> : <Play />}
+        {playing ? <VolumeX /> : <Volume2 />}
       </Button>
     </>
   );
