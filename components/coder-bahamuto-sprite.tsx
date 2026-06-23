@@ -44,9 +44,19 @@ export type BahamutoFacing = "left" | "right";
 type CoderBahamutoSpriteProps = {
   pose: BahamutoPose;
   facing: BahamutoFacing;
+  variant?: "default" | "fail";
 };
 
-export function CoderBahamutoSprite({ pose, facing }: CoderBahamutoSpriteProps) {
+const BAHAMUTO_FILL = {
+  default: BUG_FILL,
+  fail: "#ef4444",
+} as const;
+
+export function CoderBahamutoSprite({
+  pose,
+  facing,
+  variant = "default",
+}: CoderBahamutoSpriteProps) {
   return (
     <svg
       viewBox="0 0 150 120"
@@ -61,7 +71,7 @@ export function CoderBahamutoSprite({ pose, facing }: CoderBahamutoSpriteProps) 
       <g transform={SPRITE_TRANSFORM}>
         <path
           d={pose === "stand" ? POSE_STAND : POSE_JACK}
-          fill={BUG_FILL}
+          fill={BAHAMUTO_FILL[variant]}
           fillRule="evenodd"
         />
       </g>

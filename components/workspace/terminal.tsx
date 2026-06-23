@@ -6,6 +6,7 @@ import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
+import { useWorkspaceReady } from "@/components/workspace/workspace-ready-provider";
 import { getWorkspacePathEnv } from "@/lib/webcontainer/setup-workspace";
 import { WorkspacePanel } from "@/components/workspace/workspace-panel";
 import {
@@ -20,6 +21,7 @@ import { cn } from "@/lib/utils";
 
 export function TerminalPanel() {
   const { webcontainer, status } = useWebContainer();
+  const { reportPanelReady, resetPanelReady } = useWorkspaceReady();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme !== "light";
   const containerRef = useRef<HTMLDivElement>(null);
@@ -88,6 +90,8 @@ export function TerminalPanel() {
       terminal.onData((data) => {
         void inputWriter?.write(data);
       });
+
+      reportPanelReady("terminal");
     }
 
     void startShell();
@@ -109,8 +113,9 @@ export function TerminalPanel() {
       terminal.dispose();
       terminalRef.current = null;
       fitAddonRef.current = null;
+      resetPanelReady("terminal");
     };
-  }, [webcontainer, status]);
+  }, [webcontainer, status, reportPanelReady, resetPanelReady]);
 
   if (status !== "ready") {
     return (

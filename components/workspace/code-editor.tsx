@@ -10,6 +10,7 @@ import {
   getFormatSupport,
 } from "@/lib/codemirror/format-document";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
+import { useWorkspaceReady } from "@/components/workspace/workspace-ready-provider";
 import { WorkspacePanel } from "@/components/workspace/workspace-panel";
 import { WorkspaceToolbarTooltip } from "@/components/workspace/workspace-toolbar-tooltip";
 import { workspaceUi, WORKSPACE_UI_FONT_SYNC_EVENT } from "@/lib/workspace/colors";
@@ -20,6 +21,7 @@ function getFileName(path: string) {
 
 export function CodeEditor() {
   const { webcontainer, status, selectedPath } = useWebContainer();
+  const { reportPanelReady, resetPanelReady } = useWorkspaceReady();
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const saveTimeoutRef = useRef<number | null>(null);
@@ -90,6 +92,7 @@ export function CodeEditor() {
       });
 
       viewRef.current = view;
+      reportPanelReady("codeEditor");
     }
 
     void loadEditor();
@@ -101,8 +104,26 @@ export function CodeEditor() {
       }
       viewRef.current?.destroy();
       viewRef.current = null;
+      resetPanelReady("codeEditor");
     };
-  }, [webcontainer, selectedPath, status]);
+  }, [
+    webcontainer,
+    selectedPath,
+    status,
+    reportPanelReady,
+    resetPanelReady,
+  ]);
+
+  useEffect(() => {
+    if (status !== "ready") return;
+    if (selectedPath) return;
+
+    reportPanelReady("codeEditor");
+
+    return () => {
+      resetPanelReady("codeEditor");
+    };
+  }, [status, selectedPath, reportPanelReady, resetPanelReady]);
 
   useEffect(() => {
     const container = containerRef.current;
