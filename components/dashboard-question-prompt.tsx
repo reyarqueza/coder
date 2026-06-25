@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { pressStart2P } from "@/lib/fonts/press-start-2p";
 import { getQuestionDisplayText } from "@/lib/questions/catalog";
 import type { CodingQuestion } from "@/lib/questions/types";
 import {
@@ -39,7 +40,10 @@ function renderVisibleSections(question: CodingQuestion, visibleLength: number) 
     }
 
     return (
-      <p key={`${question.id}-section-${index}`} className="text-sm leading-relaxed">
+      <p
+        key={`${question.id}-section-${index}`}
+        className={cn(pressStart2P.className, "text-sm leading-relaxed")}
+      >
         {text}
       </p>
     );
@@ -53,17 +57,21 @@ export function DashboardQuestionPrompt({
 }: DashboardQuestionPromptProps) {
   const [visibleLength, setVisibleLength] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
-  const hasStartedRef = useRef(false);
+  const onCompleteRef = useRef(onComplete);
   const fullText = getQuestionDisplayText(question);
 
-  useEffect(() => {
-    if (!active || hasStartedRef.current) return;
+  onCompleteRef.current = onComplete;
 
-    hasStartedRef.current = true;
-    setVisibleLength(0);
-    setIsTyping(true);
+  useEffect(() => {
+    if (!active) {
+      setVisibleLength(0);
+      setIsTyping(false);
+      return;
+    }
 
     let index = 0;
+    setVisibleLength(0);
+    setIsTyping(true);
 
     const intervalId = window.setInterval(() => {
       index += 1;
@@ -79,14 +87,14 @@ export function DashboardQuestionPrompt({
       if (nextLength >= fullText.length) {
         window.clearInterval(intervalId);
         setIsTyping(false);
-        onComplete?.();
+        onCompleteRef.current?.();
       }
     }, CHAR_DELAY_MS);
 
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [active, fullText]);
+  }, [active, question.id, fullText]);
 
   return (
     <div

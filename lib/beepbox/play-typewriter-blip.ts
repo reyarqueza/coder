@@ -19,7 +19,16 @@ function getTypewriterSynth(): Synth {
 
 /** Call synchronously from the Start button click to unlock Web Audio. */
 export function primeTypewriterAudio() {
+  typewriterEnabled = true;
   getTypewriterSynth().maintainLiveInput();
+}
+
+export function resetTypewriterAudio() {
+  typewriterEnabled = true;
+  if (synth) {
+    synth.liveInputStarted = false;
+    synth.maintainLiveInput();
+  }
 }
 
 export function setTypewriterAudioEnabled(enabled: boolean) {
