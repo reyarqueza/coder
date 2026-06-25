@@ -1,3 +1,4 @@
+import { LoggedOutBahamutoBackground } from "@/components/logged-out-bahamuto-background";
 import { LoginForm } from "@/components/login-form";
 import { PageContainer } from "@/components/page-container";
 import {
@@ -10,8 +11,10 @@ import {
 
 export default function LoginPage() {
   return (
-    <main className="flex w-full flex-1 flex-col justify-center py-16">
-      <PageContainer className="mx-auto flex max-w-6xl flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
+    <>
+      <LoggedOutBahamutoBackground />
+      <main className="relative z-10 flex w-full flex-1 flex-col justify-center py-16">
+        <PageContainer className="relative z-10 mx-auto flex max-w-6xl flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
         <section className="max-w-xl text-center lg:max-w-2xl lg:text-left">
           <p className="text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
             Coder Bahamuto
@@ -37,7 +40,8 @@ export default function LoginPage() {
             <LoginForm />
           </CardContent>
         </Card>
-      </PageContainer>
-    </main>
+        </PageContainer>
+      </main>
+    </>
   );
 }
