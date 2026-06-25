@@ -96,16 +96,6 @@ export function DashboardBahamutoDancer({
           facing={facing}
           variant={failed ? "fail" : "default"}
         />
-        {failed ? (
-          <span className="pb-1 text-4xl font-black tracking-wider text-red-500">
-            FAIL
-          </span>
-        ) : null}
-        {succeeded ? (
-          <span className="pb-1 text-2xl font-black tracking-wide text-green-500 sm:text-3xl">
-            CONGRATULATIONS!
-          </span>
-        ) : null}
       </div>
     </div>
   );

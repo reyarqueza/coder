@@ -13,17 +13,30 @@ import { FieldSet } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { getDefaultQuestion } from "@/lib/questions/catalog";
 import { seedQuestionStarterFile } from "@/lib/questions/starter-files";
-import { primeTypewriterAudio } from "@/lib/beepbox/play-typewriter-blip";
+import { primeTypewriterAudio, setTypewriterAudioEnabled } from "@/lib/beepbox/play-typewriter-blip";
+import {
+  playFailureSound,
+  playSuccessSound,
+  primeSuccessAudio,
+} from "@/lib/beepbox/play-outcome-sound";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
 import { useWorkspaceReady } from "@/components/workspace/workspace-ready-provider";
 
-export function DashboardToolbar() {
+type DashboardToolbarProps = {
+  started: boolean;
+  onStartedChange: (started: boolean) => void;
+};
+
+export function DashboardToolbar({
+  started,
+  onStartedChange,
+}: DashboardToolbarProps) {
   const { workspaceReady } = useWorkspaceReady();
   const { webcontainer, status, setSelectedPath, refreshFiles } =
     useWebContainer();
   const [questionStarted, setQuestionStarted] = useState(false);
-  const [started, setStarted] = useState(false);
-  const [playing, setPlaying] = useState(false);
+  const [questionDisplayed, setQuestionDisplayed] = useState(false);
+  const [playing, setPlaying] = useState(true);
   const [solutionComplete, setSolutionComplete] = useState(false);
   const [failed, setFailed] = useState(false);
   const [secondsRemaining, setSecondsRemaining] = useState(
@@ -31,14 +44,34 @@ export function DashboardToolbar() {
   );
   const question = getDefaultQuestion();
 
+  function setAudioPlaying(nextPlaying: boolean) {
+    setTypewriterAudioEnabled(nextPlaying);
+    setPlaying(nextPlaying);
+  }
+
+  function handleFail() {
+    if (failed || solutionComplete) return;
+
+    playFailureSound();
+    setFailed(true);
+    setAudioPlaying(false);
+  }
+
+  function handleSuccess() {
+    if (failed || solutionComplete) return;
+
+    playSuccessSound();
+    setSolutionComplete(true);
+    setAudioPlaying(false);
+  }
+
   useEffect(() => {
     if (!started || solutionComplete || failed) return;
 
     const intervalId = window.setInterval(() => {
       setSecondsRemaining((current) => {
         if (current <= 1) {
-          setFailed(true);
-          setPlaying(false);
+          handleFail();
           return 0;
         }
         return current - 1;
@@ -50,11 +83,14 @@ export function DashboardToolbar() {
 
   async function handleStartQuestion() {
     primeTypewriterAudio();
+    primeSuccessAudio();
     setQuestionStarted(true);
   }
 
   async function handleBegin() {
     if (!webcontainer || status !== "ready") return;
+
+    primeSuccessAudio();
 
     const starterPath = await seedQuestionStarterFile(webcontainer, question);
     if (starterPath) {
@@ -63,41 +99,56 @@ export function DashboardToolbar() {
     }
   }
 
-  function handleCorrect() {
-    setSolutionComplete(true);
-    setPlaying(false);
-  }
-
   return (
     <FieldSet className="w-full">
-      <DashboardQuestionPrompt active={questionStarted} question={question} />
+      <DashboardQuestionPrompt
+        active={questionStarted}
+        question={question}
+        onComplete={() => setQuestionDisplayed(true)}
+      />
       <div className="flex w-full items-end gap-4">
         <div className="flex shrink-0 items-end gap-2">
-          <Button
-            type="button"
-            disabled={!workspaceReady || questionStarted}
-            onClick={() => void handleStartQuestion()}
-          >
-            Start
-          </Button>
-          <DashboardCheckAnswer
-            question={question}
-            enabled={workspaceReady && questionStarted}
-            disabled={failed || solutionComplete}
-            onCorrect={handleCorrect}
-          />
+          {!questionStarted ? (
+            <Button
+              type="button"
+              disabled={status !== "ready"}
+              onClick={() => void handleStartQuestion()}
+            >
+              Start
+            </Button>
+          ) : null}
           <DashboardMusicPlayer
             started={started}
             playing={playing}
-            onStartedChange={setStarted}
-            onPlayingChange={setPlaying}
+            showBegin={questionDisplayed}
+            onStartedChange={onStartedChange}
+            onPlayingChange={setAudioPlaying}
             onBegin={handleBegin}
           />
+          {started ? (
+            <DashboardCheckAnswer
+              question={question}
+              enabled={workspaceReady}
+              disabled={failed || solutionComplete}
+              onCorrect={handleSuccess}
+              onIncorrect={handleFail}
+            />
+          ) : null}
           <DashboardChallengeTimer
             active={started}
             expired={failed}
             secondsRemaining={secondsRemaining}
           />
+          {failed ? (
+            <span className="inline-flex h-8 shrink-0 items-center text-[length:calc(2rem-10px)] font-black leading-none tracking-wider text-red-500">
+              FAIL
+            </span>
+          ) : null}
+          {solutionComplete ? (
+            <span className="inline-flex h-8 shrink-0 items-center text-[length:calc(2rem-10px)] font-black leading-none tracking-wider text-green-500">
+              SUCCESS
+            </span>
+          ) : null}
         </div>
         <DashboardBahamutoDancer
           started={started}

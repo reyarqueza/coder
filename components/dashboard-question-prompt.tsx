@@ -14,6 +14,7 @@ const CHAR_DELAY_MS = 38;
 type DashboardQuestionPromptProps = {
   active: boolean;
   question: CodingQuestion;
+  onComplete?: () => void;
 };
 
 function renderVisibleSections(question: CodingQuestion, visibleLength: number) {
@@ -48,6 +49,7 @@ function renderVisibleSections(question: CodingQuestion, visibleLength: number) 
 export function DashboardQuestionPrompt({
   active,
   question,
+  onComplete,
 }: DashboardQuestionPromptProps) {
   const [visibleLength, setVisibleLength] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
@@ -77,6 +79,7 @@ export function DashboardQuestionPrompt({
       if (nextLength >= fullText.length) {
         window.clearInterval(intervalId);
         setIsTyping(false);
+        onComplete?.();
       }
     }, CHAR_DELAY_MS);
 

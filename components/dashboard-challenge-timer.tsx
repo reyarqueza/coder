@@ -26,14 +26,22 @@ export function DashboardChallengeTimer({
   if (!active && !expired) return null;
 
   return (
-    <span
-      className={cn(
-        "min-w-[3ch] font-mono text-sm tabular-nums",
-        expired ? "text-red-500" : "text-muted-foreground",
-      )}
+    <div
       aria-live="polite"
+      className={cn(
+        "inline-flex h-8 min-w-[4.25rem] shrink-0 items-center justify-center overflow-hidden rounded-lg border box-border px-2",
+        "bg-background",
+        expired ? "border-red-500/50" : "border-border",
+      )}
     >
-      {formatChallengeTime(secondsRemaining)}
-    </span>
+      <span
+        className={cn(
+          "font-mono text-[length:calc(2rem-10px)] font-semibold leading-none tabular-nums",
+          expired ? "text-red-500" : "text-foreground",
+        )}
+      >
+        {formatChallengeTime(secondsRemaining)}
+      </span>
+    </div>
   );
 }
