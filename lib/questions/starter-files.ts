@@ -16,20 +16,40 @@ function getFullNames(users) {
 console.log(getFullNames(users));
 `,
   },
+  "filter-adults": {
+    path: "solution.js",
+    content: `const users = [
+  { firstName: 'Jane', lastName: 'Doe', age: 25 },
+  { firstName: 'John', lastName: 'Smith', age: 17 },
+  { firstName: 'Bob', lastName: 'Brown', age: 30 }
+];
+
+function getAdultUsers(users) {
+  // your code here
+}
+
+console.log(getAdultUsers(users));
+`,
+  },
 };
 
 export async function seedQuestionStarterFile(
   webcontainer: WebContainer,
   question: CodingQuestion,
+  options?: { force?: boolean },
 ): Promise<string | null> {
   const starter = STARTER_FILES[question.id];
   if (!starter) return null;
 
-  try {
-    await webcontainer.fs.readFile(starter.path, "utf-8");
-    return starter.path;
-  } catch {
-    await webcontainer.fs.writeFile(starter.path, starter.content);
-    return starter.path;
+  if (!options?.force) {
+    try {
+      await webcontainer.fs.readFile(starter.path, "utf-8");
+      return starter.path;
+    } catch {
+      // file does not exist yet
+    }
   }
+
+  await webcontainer.fs.writeFile(starter.path, starter.content);
+  return starter.path;
 }

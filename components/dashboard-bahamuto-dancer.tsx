@@ -14,6 +14,7 @@ type DashboardBahamutoDancerProps = {
   playing: boolean;
   failed: boolean;
   succeeded: boolean;
+  resetKey: number;
 };
 
 export function DashboardBahamutoDancer({
@@ -21,6 +22,7 @@ export function DashboardBahamutoDancer({
   playing,
   failed,
   succeeded,
+  resetKey,
 }: DashboardBahamutoDancerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const directionRef = useRef<1 | -1>(1);
@@ -49,6 +51,13 @@ export function DashboardBahamutoDancer({
 
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    directionRef.current = 1;
+    setStep(0);
+    setFacing("right");
+    setPose("stand");
+  }, [resetKey]);
 
   useEffect(() => {
     setStep((current) => Math.min(current, maxStep));

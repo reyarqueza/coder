@@ -10,6 +10,7 @@ type DashboardMusicPlayerProps = {
   playing: boolean;
   started: boolean;
   showBegin?: boolean;
+  resetKey: number;
   onPlayingChange: (playing: boolean) => void;
   onStartedChange: (started: boolean) => void;
   onBegin?: () => void | Promise<void>;
@@ -19,6 +20,7 @@ export function DashboardMusicPlayer({
   playing,
   started,
   showBegin = false,
+  resetKey,
   onPlayingChange,
   onStartedChange,
   onBegin,
@@ -34,6 +36,14 @@ export function DashboardMusicPlayer({
       synthRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    const synth = synthRef.current;
+    if (!synth) return;
+
+    synth.snapToStart();
+    synth.pause();
+  }, [resetKey]);
 
   useEffect(() => {
     const synth = synthRef.current;

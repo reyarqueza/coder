@@ -11,7 +11,12 @@ import { DashboardMusicPlayer } from "@/components/dashboard-music-player";
 import { DashboardQuestionPrompt } from "@/components/dashboard-question-prompt";
 import { FieldSet } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
-import { getDefaultQuestion } from "@/lib/questions/catalog";
+import { pressStart2P } from "@/lib/fonts/press-start-2p";
+import {
+  getQuestionAtIndex,
+  hasNextQuestion,
+  isLastQuestion,
+} from "@/lib/questions/catalog";
 import { seedQuestionStarterFile } from "@/lib/questions/starter-files";
 import { primeTypewriterAudio, setTypewriterAudioEnabled } from "@/lib/beepbox/play-typewriter-blip";
 import {
@@ -21,15 +26,20 @@ import {
 } from "@/lib/beepbox/play-outcome-sound";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
 import { useWorkspaceReady } from "@/components/workspace/workspace-ready-provider";
+import { cn } from "@/lib/utils";
 
 type DashboardToolbarProps = {
   started: boolean;
   onStartedChange: (started: boolean) => void;
+  onCorrect: () => void;
+  onShowResults: () => void;
 };
 
 export function DashboardToolbar({
   started,
   onStartedChange,
+  onCorrect,
+  onShowResults,
 }: DashboardToolbarProps) {
   const { workspaceReady } = useWorkspaceReady();
   const { webcontainer, status, setSelectedPath, refreshFiles } =
@@ -42,7 +52,18 @@ export function DashboardToolbar({
   const [secondsRemaining, setSecondsRemaining] = useState(
     CHALLENGE_DURATION_SECONDS,
   );
-  const question = getDefaultQuestion();
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [sessionKey, setSessionKey] = useState(0);
+  const question = getQuestionAtIndex(questionIndex);
+  const showNext =
+    (failed || solutionComplete) && hasNextQuestion(questionIndex);
+  const showFinalResult =
+    (failed || solutionComplete) && isLastQuestion(questionIndex);
+  const showStartButton = questionIndex === 0 && !questionStarted;
+
+  useEffect(() => {
+    setTypewriterAudioEnabled(playing);
+  }, [playing]);
 
   function setAudioPlaying(nextPlaying: boolean) {
     setTypewriterAudioEnabled(nextPlaying);
@@ -63,6 +84,7 @@ export function DashboardToolbar({
     playSuccessSound();
     setSolutionComplete(true);
     setAudioPlaying(false);
+    onCorrect();
   }
 
   useEffect(() => {
@@ -92,23 +114,58 @@ export function DashboardToolbar({
 
     primeSuccessAudio();
 
-    const starterPath = await seedQuestionStarterFile(webcontainer, question);
+    const starterPath = await seedQuestionStarterFile(webcontainer, question, {
+      force: true,
+    });
     if (starterPath) {
       refreshFiles();
       setSelectedPath(starterPath);
     }
   }
 
+  function handleNext() {
+    if (!hasNextQuestion(questionIndex)) return;
+
+    const nextIndex = questionIndex + 1;
+
+    setQuestionIndex(nextIndex);
+    setQuestionDisplayed(false);
+    setFailed(false);
+    setSolutionComplete(false);
+    setSecondsRemaining(CHALLENGE_DURATION_SECONDS);
+    setAudioPlaying(true);
+    onStartedChange(false);
+    setSelectedPath(null);
+    setSessionKey((current) => current + 1);
+
+    if (nextIndex > 0) {
+      primeTypewriterAudio();
+      primeSuccessAudio();
+      setQuestionStarted(true);
+    } else {
+      setQuestionStarted(false);
+    }
+  }
+
+  function handleShowFinalResult() {
+    setAudioPlaying(false);
+    onStartedChange(false);
+    setSelectedPath(null);
+    setSessionKey((current) => current + 1);
+    onShowResults();
+  }
+
   return (
     <FieldSet className="w-full">
       <DashboardQuestionPrompt
+        key={`${question.id}-${sessionKey}`}
         active={questionStarted}
         question={question}
         onComplete={() => setQuestionDisplayed(true)}
       />
       <div className="flex w-full items-end gap-4">
         <div className="flex shrink-0 items-end gap-2">
-          {!questionStarted ? (
+          {!showStartButton ? null : (
             <Button
               type="button"
               disabled={status !== "ready"}
@@ -116,11 +173,12 @@ export function DashboardToolbar({
             >
               Start
             </Button>
-          ) : null}
+          )}
           <DashboardMusicPlayer
             started={started}
             playing={playing}
             showBegin={questionDisplayed}
+            resetKey={sessionKey}
             onStartedChange={onStartedChange}
             onPlayingChange={setAudioPlaying}
             onBegin={handleBegin}
@@ -140,14 +198,34 @@ export function DashboardToolbar({
             secondsRemaining={secondsRemaining}
           />
           {failed ? (
-            <span className="inline-flex h-8 shrink-0 items-center text-[length:calc(2rem-10px)] font-black leading-none tracking-wider text-red-500">
+            <span
+              className={cn(
+                pressStart2P.className,
+                "inline-flex h-8 shrink-0 items-center text-[length:calc(2rem-10px)] leading-none tracking-wider text-red-500",
+              )}
+            >
               FAIL
             </span>
           ) : null}
           {solutionComplete ? (
-            <span className="inline-flex h-8 shrink-0 items-center text-[length:calc(2rem-10px)] font-black leading-none tracking-wider text-green-500">
+            <span
+              className={cn(
+                pressStart2P.className,
+                "inline-flex h-8 shrink-0 items-center text-[length:calc(2rem-10px)] leading-none tracking-wider text-green-500",
+              )}
+            >
               SUCCESS
             </span>
+          ) : null}
+          {showNext ? (
+            <Button type="button" onClick={() => handleNext()}>
+              Next
+            </Button>
+          ) : null}
+          {showFinalResult ? (
+            <Button type="button" onClick={() => handleShowFinalResult()}>
+              Final Result
+            </Button>
           ) : null}
         </div>
         <DashboardBahamutoDancer
@@ -155,6 +233,7 @@ export function DashboardToolbar({
           playing={playing && !failed && !solutionComplete}
           failed={failed}
           succeeded={solutionComplete}
+          resetKey={sessionKey}
         />
       </div>
     </FieldSet>

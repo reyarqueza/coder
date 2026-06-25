@@ -20,7 +20,7 @@ function getFileName(path: string) {
 }
 
 export function CodeEditor() {
-  const { webcontainer, status, selectedPath } = useWebContainer();
+  const { webcontainer, status, selectedPath, refreshKey } = useWebContainer();
   const { reportPanelReady, resetPanelReady } = useWorkspaceReady();
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
@@ -110,6 +110,7 @@ export function CodeEditor() {
     webcontainer,
     selectedPath,
     status,
+    refreshKey,
     reportPanelReady,
     resetPanelReady,
   ]);
