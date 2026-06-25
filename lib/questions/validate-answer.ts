@@ -39,7 +39,20 @@ function stripAnsi(text: string): string {
   return text.replace(/\x1b\[[0-9;]*m/g, "");
 }
 
-function parseOutputValue(line: string): unknown {
+function normalizeNodeInspectToJson(text: string): string {
+  return text
+    .replace(/(\{|,)\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":')
+    .replace(/'/g, '"');
+}
+
+function extractBracketBlock(text: string, open: string, close: string): string | null {
+  const start = text.indexOf(open);
+  const end = text.lastIndexOf(close);
+  if (start === -1 || end <= start) return null;
+  return text.slice(start, end + 1);
+}
+
+function parseSingleLineOutput(line: string): unknown {
   const cleaned = stripAnsi(line).trim();
 
   try {
@@ -61,9 +74,44 @@ function parseOutputValue(line: string): unknown {
   throw new Error(`Unrecognized output format: ${cleaned}`);
 }
 
+function parseStdoutValue(stdout: string): unknown {
+  const cleaned = stripAnsi(stdout).trim();
+  if (!cleaned) {
+    throw new Error("No output found.");
+  }
+
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    // fall through
+  }
+
+  try {
+    return parseSingleLineOutput(getLastNonEmptyLine(cleaned));
+  } catch {
+    // fall through
+  }
+
+  for (const [open, close] of [
+    ["[", "]"],
+    ["{", "}"],
+  ] as const) {
+    const block = extractBracketBlock(cleaned, open, close);
+    if (!block) continue;
+
+    try {
+      return JSON.parse(normalizeNodeInspectToJson(block));
+    } catch {
+      // fall through
+    }
+  }
+
+  throw new Error(`Unrecognized output format: ${cleaned}`);
+}
+
 function compareJson(stdout: string, expectedStdout: string): ValidateAnswerResult {
-  const actualLine = getLastNonEmptyLine(stdout);
-  if (!actualLine) {
+  const cleaned = stripAnsi(stdout).trim();
+  if (!cleaned) {
     return { ok: false, message: "No output found. Use console.log to print your answer." };
   }
 
@@ -71,11 +119,11 @@ function compareJson(stdout: string, expectedStdout: string): ValidateAnswerResu
   let expected: unknown;
 
   try {
-    actual = parseOutputValue(actualLine);
+    actual = parseStdoutValue(stdout);
   } catch {
     return {
       ok: false,
-      message: `Could not parse output: ${stripAnsi(actualLine)}`,
+      message: `Could not parse output: ${getLastNonEmptyLine(cleaned) || cleaned}`,
     };
   }
 
@@ -88,7 +136,7 @@ function compareJson(stdout: string, expectedStdout: string): ValidateAnswerResu
   if (!deepEqual(actual, expected)) {
     return {
       ok: false,
-      message: `Expected ${expectedStdout}, but got ${stripAnsi(actualLine)}.`,
+      message: `Expected ${expectedStdout}, but got ${cleaned}.`,
     };
   }
 
