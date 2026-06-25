@@ -5,6 +5,7 @@ const TYPEWRITER_PITCH = 24;
 const BLIP_DURATION_PARTS = 2;
 
 let synth: Synth | null = null;
+let typewriterEnabled = true;
 
 function getTypewriterSynth(): Synth {
   if (!synth) {
@@ -21,7 +22,18 @@ export function primeTypewriterAudio() {
   getTypewriterSynth().maintainLiveInput();
 }
 
+export function setTypewriterAudioEnabled(enabled: boolean) {
+  typewriterEnabled = enabled;
+
+  if (!enabled && synth) {
+    synth.liveInputStarted = false;
+    synth.maintainLiveInput();
+  }
+}
+
 export function playTypewriterBlip() {
+  if (!typewriterEnabled) return;
+
   const instance = getTypewriterSynth();
   instance.liveInputPitches = [TYPEWRITER_PITCH];
   instance.liveInputStarted = true;

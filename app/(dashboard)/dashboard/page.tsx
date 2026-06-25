@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { DashboardIde } from "@/components/dashboard-ide";
 import { DashboardToolbar } from "@/components/dashboard-toolbar";
 import { WorkspaceReadyProvider } from "@/components/workspace/workspace-ready-provider";
@@ -16,15 +16,19 @@ function DashboardFallback() {
 }
 
 function DashboardContent() {
+  const [started, setStarted] = useState(false);
+
   return (
     <WorkspaceReadyProvider>
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <div className="shrink-0 border-b p-4">
-          <DashboardToolbar />
+          <DashboardToolbar started={started} onStartedChange={setStarted} />
         </div>
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          <DashboardIde />
-        </div>
+        {started ? (
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+            <DashboardIde />
+          </div>
+        ) : null}
       </div>
     </WorkspaceReadyProvider>
   );

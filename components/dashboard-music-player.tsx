@@ -9,6 +9,7 @@ import { DASHBOARD_SONG } from "@/lib/beepbox/dashboard-song";
 type DashboardMusicPlayerProps = {
   playing: boolean;
   started: boolean;
+  showBegin?: boolean;
   onPlayingChange: (playing: boolean) => void;
   onStartedChange: (started: boolean) => void;
   onBegin?: () => void | Promise<void>;
@@ -17,6 +18,7 @@ type DashboardMusicPlayerProps = {
 export function DashboardMusicPlayer({
   playing,
   started,
+  showBegin = false,
   onPlayingChange,
   onStartedChange,
   onBegin,
@@ -56,34 +58,37 @@ export function DashboardMusicPlayer({
 
   function handleToggleMute() {
     const synth = synthRef.current;
-    if (!synth || !started) return;
+    if (!synth) return;
 
-    if (synth.playing) {
-      synth.pause();
-      onPlayingChange(false);
-    } else {
-      synth.play();
-      onPlayingChange(true);
+    const nextPlaying = !playing;
+    onPlayingChange(nextPlaying);
+
+    if (started) {
+      if (nextPlaying) {
+        synth.play();
+      } else {
+        synth.pause();
+      }
     }
   }
 
   return (
     <>
-      <Button
-        type="button"
-        disabled={started}
-        onClick={() => void handleBegin()}
-        className="bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
-      >
-        Begin
-      </Button>
+      {showBegin && !started ? (
+        <Button
+          type="button"
+          onClick={() => void handleBegin()}
+          className="bg-green-600 text-white hover:bg-green-700"
+        >
+          Begin
+        </Button>
+      ) : null}
       <Button
         type="button"
         variant="outline"
         size="icon"
-        disabled={!started}
         onClick={handleToggleMute}
-        aria-label={playing ? "Mute music" : "Unmute music"}
+        aria-label={playing ? "Mute audio" : "Unmute audio"}
       >
         {playing ? <VolumeX /> : <Volume2 />}
       </Button>
