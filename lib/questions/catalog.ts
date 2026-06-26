@@ -47,6 +47,29 @@ export const CODING_QUESTIONS: CodingQuestion[] = [
       normalize: "json",
     },
   },
+  {
+    id: "reduce-total-age",
+    sections: [
+      {
+        type: "text",
+        content:
+          "Given an array of user objects, use reduce() to return the total sum of all users' ages. Save your solution in solution.js and console.log the result.",
+      },
+      {
+        type: "code",
+        content: `const users = [
+  { firstName: 'Jane', lastName: 'Doe', age: 25 },
+  { firstName: 'John', lastName: 'Smith', age: 17 },
+  { firstName: 'Bob', lastName: 'Brown', age: 30 }
+];`,
+      },
+    ],
+    validation: {
+      entryFile: "solution.js",
+      expectedStdout: "72",
+      normalize: "trim",
+    },
+  },
 ];
 
 export function getQuestionById(id: string): CodingQuestion | undefined {

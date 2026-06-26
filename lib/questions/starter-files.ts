@@ -31,6 +31,21 @@ function getAdultUsers(users) {
 console.log(getAdultUsers(users));
 `,
   },
+  "reduce-total-age": {
+    path: "solution.js",
+    content: `const users = [
+  { firstName: 'Jane', lastName: 'Doe', age: 25 },
+  { firstName: 'John', lastName: 'Smith', age: 17 },
+  { firstName: 'Bob', lastName: 'Brown', age: 30 }
+];
+
+function getTotalAge(users) {
+  // your code here
+}
+
+console.log(getTotalAge(users));
+`,
+  },
 };
 
 export async function seedQuestionStarterFile(
