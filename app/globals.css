@@ -247,3 +247,19 @@
     scrollbar-color: var(--workspace-border) transparent;
   }
 }
+
+/* Question prompt example code — outside @layer so it wins over parent text-sm (14px). */
+.question-code-block {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.question-code-block .cm-editor,
+.question-code-block .cm-scroller,
+.question-code-block .cm-content,
+.question-code-block .cm-line,
+.question-code-block .cm-gutters,
+.question-code-block .cm-content * {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+}

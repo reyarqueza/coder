@@ -1,5 +1,8 @@
 import type { CodingQuestion } from "@/lib/questions/types";
 
+const SOLUTION_INSTRUCTION =
+  "Type your solution in solution.js. You have the option to run node in the terminal to test your work before you Check your Answer.";
+
 export const CODING_QUESTIONS: CodingQuestion[] = [
   {
     id: "map-full-names",
@@ -7,7 +10,7 @@ export const CODING_QUESTIONS: CodingQuestion[] = [
       {
         type: "text",
         content:
-          "Given an array of user objects, write a function using map() that returns a new array containing only the users' full names provided the following. Save your solution in solution.js and console.log the result array.",
+          "Given an array of user objects, write a function using map() that returns a new array containing only the users' full names provided the following.",
       },
       {
         type: "code",
@@ -15,6 +18,10 @@ export const CODING_QUESTIONS: CodingQuestion[] = [
   { firstName: 'Jane', lastName: 'Doe' },
   { firstName: 'John', lastName: 'Smith' }
 ];`,
+      },
+      {
+        type: "text",
+        content: SOLUTION_INSTRUCTION,
       },
     ],
     validation: {
@@ -29,7 +36,7 @@ export const CODING_QUESTIONS: CodingQuestion[] = [
       {
         type: "text",
         content:
-          "Given an array of user objects, use filter() to return a new array containing only the users who are over 18 years old. Save your solution in solution.js and console.log the result array.",
+          "Given an array of user objects, use filter() to return a new array containing only the users who are over 18 years old.",
       },
       {
         type: "code",
@@ -38,6 +45,10 @@ export const CODING_QUESTIONS: CodingQuestion[] = [
   { firstName: 'John', lastName: 'Smith', age: 17 },
   { firstName: 'Bob', lastName: 'Brown', age: 30 }
 ];`,
+      },
+      {
+        type: "text",
+        content: SOLUTION_INSTRUCTION,
       },
     ],
     validation: {
@@ -53,7 +64,7 @@ export const CODING_QUESTIONS: CodingQuestion[] = [
       {
         type: "text",
         content:
-          "Given an array of user objects, use reduce() to return the total sum of all users' ages. Save your solution in solution.js and console.log the result.",
+          "Given an array of user objects, use reduce() to return the total sum of all users' ages.",
       },
       {
         type: "code",
@@ -62,6 +73,10 @@ export const CODING_QUESTIONS: CodingQuestion[] = [
   { firstName: 'John', lastName: 'Smith', age: 17 },
   { firstName: 'Bob', lastName: 'Brown', age: 30 }
 ];`,
+      },
+      {
+        type: "text",
+        content: SOLUTION_INSTRUCTION,
       },
     ],
     validation: {

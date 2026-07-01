@@ -2,15 +2,11 @@
 
 import { cn } from "@/lib/utils";
 
-const CHALLENGE_DURATION_SECONDS = 60;
-
 export function formatChallengeTime(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
-
-export { CHALLENGE_DURATION_SECONDS };
 
 type DashboardChallengeTimerProps = {
   secondsRemaining: number;
