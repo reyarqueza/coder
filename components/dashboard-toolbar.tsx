@@ -3,10 +3,8 @@
 import { useEffect, useState } from "react";
 import { DashboardBahamutoDancer } from "@/components/dashboard-bahamuto-dancer";
 import { DashboardCheckAnswer } from "@/components/dashboard-check-answer";
-import {
-  CHALLENGE_DURATION_SECONDS,
-  DashboardChallengeTimer,
-} from "@/components/dashboard-challenge-timer";
+import { DashboardChallengeMinutesControl } from "@/components/dashboard-challenge-minutes-control";
+import { DashboardChallengeTimer } from "@/components/dashboard-challenge-timer";
 import { DashboardMusicPlayer } from "@/components/dashboard-music-player";
 import { DashboardQuestionPrompt } from "@/components/dashboard-question-prompt";
 import { FieldSet } from "@/components/ui/field";
@@ -26,9 +24,11 @@ import {
 } from "@/lib/beepbox/play-outcome-sound";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
 import { useWorkspaceReady } from "@/components/workspace/workspace-ready-provider";
+import { challengeMinutesToSeconds } from "@/lib/challenge/constants";
 import { cn } from "@/lib/utils";
 
 type DashboardToolbarProps = {
+  initialChallengeMinutes: number;
   started: boolean;
   onStartedChange: (started: boolean) => void;
   onCorrect: () => void;
@@ -36,6 +36,7 @@ type DashboardToolbarProps = {
 };
 
 export function DashboardToolbar({
+  initialChallengeMinutes,
   started,
   onStartedChange,
   onCorrect,
@@ -49,8 +50,11 @@ export function DashboardToolbar({
   const [playing, setPlaying] = useState(true);
   const [solutionComplete, setSolutionComplete] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [secondsRemaining, setSecondsRemaining] = useState(
-    CHALLENGE_DURATION_SECONDS,
+  const [challengeMinutes, setChallengeMinutes] = useState(
+    initialChallengeMinutes,
+  );
+  const [secondsRemaining, setSecondsRemaining] = useState(() =>
+    challengeMinutesToSeconds(initialChallengeMinutes),
   );
   const [questionIndex, setQuestionIndex] = useState(0);
   const [sessionKey, setSessionKey] = useState(0);
@@ -60,6 +64,13 @@ export function DashboardToolbar({
   const showFinalResult =
     (failed || solutionComplete) && isLastQuestion(questionIndex);
   const showStartButton = questionIndex === 0 && !questionStarted;
+  const challengeActive = started && !failed && !solutionComplete;
+
+  useEffect(() => {
+    if (!started) {
+      setSecondsRemaining(challengeMinutesToSeconds(challengeMinutes));
+    }
+  }, [challengeMinutes, started]);
 
   useEffect(() => {
     setTypewriterAudioEnabled(playing);
@@ -132,7 +143,7 @@ export function DashboardToolbar({
     setQuestionDisplayed(false);
     setFailed(false);
     setSolutionComplete(false);
-    setSecondsRemaining(CHALLENGE_DURATION_SECONDS);
+    setSecondsRemaining(challengeMinutesToSeconds(challengeMinutes));
     setAudioPlaying(true);
     onStartedChange(false);
     setSelectedPath(null);
@@ -165,6 +176,11 @@ export function DashboardToolbar({
       />
       <div className="flex w-full items-end gap-4">
         <div className="flex shrink-0 items-end gap-2">
+          <DashboardChallengeMinutesControl
+            value={challengeMinutes}
+            onChange={setChallengeMinutes}
+            disabled={challengeActive}
+          />
           {!showStartButton ? null : (
             <Button
               type="button"

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { DashboardQuestionCodeBlock } from "@/components/dashboard-question-code-block";
 import { cn } from "@/lib/utils";
 import { pressStart2P } from "@/lib/fonts/press-start-2p";
 import { getQuestionDisplayText } from "@/lib/questions/catalog";
@@ -30,12 +31,10 @@ function renderVisibleSections(question: CodingQuestion, visibleLength: number) 
 
     if (section.type === "code") {
       return (
-        <pre
+        <DashboardQuestionCodeBlock
           key={`${question.id}-section-${index}`}
-          className="mt-2 font-mono text-sm whitespace-pre-wrap"
-        >
-          {text}
-        </pre>
+          content={text}
+        />
       );
     }
 
