@@ -7,6 +7,28 @@ import {
 import { TYPEWRITER_BLIP_SONG } from "@/lib/beepbox/typewriter-blip-song";
 
 const MS_PER_PART = 60000 / (CHARGE_FANFARE_TEMPO * 24);
+const FAILURE_MS_PER_PART = 30;
+
+export const FAILURE_REVEAL_PAUSE_MS = 1000;
+
+export function getFailureSoundDurationMs(): number {
+  return Math.max(
+    ...FAIL_WAH_NOTES.map(
+      (note) => note.startMs + note.durationParts * FAILURE_MS_PER_PART,
+    ),
+  );
+}
+
+export function delayAfterFailureSound(
+  pauseMs = FAILURE_REVEAL_PAUSE_MS,
+): Promise<void> {
+  return new Promise((resolve) => {
+    window.setTimeout(
+      resolve,
+      getFailureSoundDurationMs() + pauseMs,
+    );
+  });
+}
 
 // Classic sad-trombone "wah wah waaaaah" (descending, last note held).
 const FAIL_WAH_NOTES = [
