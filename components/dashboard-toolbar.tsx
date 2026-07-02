@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DashboardBahamutoDancer } from "@/components/dashboard-bahamuto-dancer";
 import { DashboardCheckAnswer } from "@/components/dashboard-check-answer";
 import { DashboardChallengeMinutesControl } from "@/components/dashboard-challenge-minutes-control";
 import { DashboardChallengeTimer } from "@/components/dashboard-challenge-timer";
 import { DashboardMusicPlayer } from "@/components/dashboard-music-player";
 import { DashboardQuestionPrompt } from "@/components/dashboard-question-prompt";
+import { DashboardQuestionSolutionReveal } from "@/components/dashboard-question-solution-reveal";
 import { FieldSet } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { pressStart2P } from "@/lib/fonts/press-start-2p";
@@ -18,6 +19,7 @@ import {
 import { seedQuestionStarterFile } from "@/lib/questions/starter-files";
 import { primeTypewriterAudio, setTypewriterAudioEnabled } from "@/lib/beepbox/play-typewriter-blip";
 import {
+  delayAfterFailureSound,
   playFailureSound,
   playSuccessSound,
   primeSuccessAudio,
@@ -33,6 +35,7 @@ type DashboardToolbarProps = {
   onStartedChange: (started: boolean) => void;
   onCorrect: () => void;
   onShowResults: () => void;
+  onFailedChange?: (failed: boolean) => void;
 };
 
 export function DashboardToolbar({
@@ -41,6 +44,7 @@ export function DashboardToolbar({
   onStartedChange,
   onCorrect,
   onShowResults,
+  onFailedChange,
 }: DashboardToolbarProps) {
   const { workspaceReady } = useWorkspaceReady();
   const { webcontainer, status, setSelectedPath, refreshFiles } =
@@ -50,6 +54,7 @@ export function DashboardToolbar({
   const [playing, setPlaying] = useState(true);
   const [solutionComplete, setSolutionComplete] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [solutionRevealReady, setSolutionRevealReady] = useState(false);
   const [challengeMinutes, setChallengeMinutes] = useState(
     initialChallengeMinutes,
   );
@@ -58,6 +63,7 @@ export function DashboardToolbar({
   );
   const [questionIndex, setQuestionIndex] = useState(0);
   const [sessionKey, setSessionKey] = useState(0);
+  const failSequenceRef = useRef(0);
   const question = getQuestionAtIndex(questionIndex);
   const showNext =
     (failed || solutionComplete) && hasNextQuestion(questionIndex);
@@ -72,10 +78,6 @@ export function DashboardToolbar({
     }
   }, [challengeMinutes, started]);
 
-  useEffect(() => {
-    setTypewriterAudioEnabled(playing);
-  }, [playing]);
-
   function setAudioPlaying(nextPlaying: boolean) {
     setTypewriterAudioEnabled(nextPlaying);
     setPlaying(nextPlaying);
@@ -86,7 +88,18 @@ export function DashboardToolbar({
 
     playFailureSound();
     setFailed(true);
-    setAudioPlaying(false);
+    setSolutionRevealReady(false);
+    onFailedChange?.(true);
+    setPlaying(false);
+
+    const failSequence = ++failSequenceRef.current;
+    void delayAfterFailureSound().then(() => {
+      if (failSequenceRef.current !== failSequence) return;
+
+      primeTypewriterAudio();
+      setTypewriterAudioEnabled(true);
+      setSolutionRevealReady(true);
+    });
   }
 
   function handleSuccess() {
@@ -142,6 +155,9 @@ export function DashboardToolbar({
     setQuestionIndex(nextIndex);
     setQuestionDisplayed(false);
     setFailed(false);
+    setSolutionRevealReady(false);
+    failSequenceRef.current += 1;
+    onFailedChange?.(false);
     setSolutionComplete(false);
     setSecondsRemaining(challengeMinutesToSeconds(challengeMinutes));
     setAudioPlaying(true);
@@ -161,19 +177,35 @@ export function DashboardToolbar({
   function handleShowFinalResult() {
     setAudioPlaying(false);
     onStartedChange(false);
+    onFailedChange?.(false);
     setSelectedPath(null);
     setSessionKey((current) => current + 1);
     onShowResults();
   }
 
   return (
-    <FieldSet className="w-full">
-      <DashboardQuestionPrompt
-        key={`${question.id}-${sessionKey}`}
-        active={questionStarted}
-        question={question}
-        onComplete={() => setQuestionDisplayed(true)}
-      />
+    <FieldSet
+      className={cn("w-full", failed && "flex min-h-0 flex-1 flex-col gap-0")}
+    >
+      <div className={cn(failed && "min-h-0 flex-1 overflow-y-auto")}>
+        <DashboardQuestionPrompt
+          key={`${question.id}-${sessionKey}`}
+          active={questionStarted}
+          question={question}
+          onComplete={() => setQuestionDisplayed(true)}
+        />
+        {failed && solutionRevealReady ? (
+          <DashboardQuestionSolutionReveal
+            key={`${question.id}-solution-${sessionKey}`}
+            question={question}
+            showNext={hasNextQuestion(questionIndex)}
+            showFinalResult={isLastQuestion(questionIndex)}
+            onNext={handleNext}
+            onShowFinalResult={handleShowFinalResult}
+          />
+        ) : null}
+      </div>
+      {failed ? null : (
       <div className="flex w-full items-end gap-4">
         <div className="flex shrink-0 items-end gap-2">
           <DashboardChallengeMinutesControl
@@ -252,6 +284,7 @@ export function DashboardToolbar({
           resetKey={sessionKey}
         />
       </div>
+      )}
     </FieldSet>
   );
 }

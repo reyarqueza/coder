@@ -11,5 +11,6 @@ export type QuestionValidation = {
 export type CodingQuestion = {
   id: string;
   sections: QuestionSection[];
+  solution: QuestionSection[];
   validation: QuestionValidation;
 };
