@@ -11,7 +11,7 @@ import {
   shouldPlayTypewriterBlip,
 } from "@/lib/beepbox/play-typewriter-blip";
 
-const CHAR_DELAY_MS = 38;
+const CHAR_DELAY_MS = 10;
 
 type DashboardTypewriterSectionsProps = {
   sections: QuestionSection[];
