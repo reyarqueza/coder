@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { pressStart2P } from "@/lib/fonts/press-start-2p";
 import {
   getQuestionAtIndex,
+  getTotalQuestionCount,
   hasNextQuestion,
   isLastQuestion,
 } from "@/lib/questions/catalog";
@@ -192,6 +193,8 @@ export function DashboardToolbar({
           key={`${question.id}-${sessionKey}`}
           active={questionStarted}
           question={question}
+          questionNumber={questionIndex + 1}
+          totalQuestions={getTotalQuestionCount()}
           onComplete={() => setQuestionDisplayed(true)}
         />
         {failed && solutionRevealReady ? (
