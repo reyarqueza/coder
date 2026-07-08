@@ -12,11 +12,12 @@ import { FieldSet } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { pressStart2P } from "@/lib/fonts/press-start-2p";
 import {
-  getQuestionAtIndex,
-  getTotalQuestionCount,
-  hasNextQuestion,
-  isLastQuestion,
+  getQuestionAtIndexForGroup,
+  getTotalQuestionCountForGroup,
+  hasNextQuestionInGroup,
+  isLastQuestionInGroup,
 } from "@/lib/questions/catalog";
+import type { QuestionGroupId } from "@/lib/questions/types";
 import { seedQuestionStarterFile } from "@/lib/questions/starter-files";
 import { primeTypewriterAudio, setTypewriterAudioEnabled } from "@/lib/beepbox/play-typewriter-blip";
 import {
@@ -31,6 +32,7 @@ import { challengeMinutesToSeconds } from "@/lib/challenge/constants";
 import { cn } from "@/lib/utils";
 
 type DashboardToolbarProps = {
+  groupId: QuestionGroupId;
   initialChallengeMinutes: number;
   started: boolean;
   onStartedChange: (started: boolean) => void;
@@ -40,6 +42,7 @@ type DashboardToolbarProps = {
 };
 
 export function DashboardToolbar({
+  groupId,
   initialChallengeMinutes,
   started,
   onStartedChange,
@@ -65,11 +68,11 @@ export function DashboardToolbar({
   const [questionIndex, setQuestionIndex] = useState(0);
   const [sessionKey, setSessionKey] = useState(0);
   const failSequenceRef = useRef(0);
-  const question = getQuestionAtIndex(questionIndex);
+  const question = getQuestionAtIndexForGroup(groupId, questionIndex);
   const showNext =
-    (failed || solutionComplete) && hasNextQuestion(questionIndex);
+    (failed || solutionComplete) && hasNextQuestionInGroup(groupId, questionIndex);
   const showFinalResult =
-    (failed || solutionComplete) && isLastQuestion(questionIndex);
+    (failed || solutionComplete) && isLastQuestionInGroup(groupId, questionIndex);
   const showStartButton = questionIndex === 0 && !questionStarted;
   const challengeActive = started && !failed && !solutionComplete;
 
@@ -149,7 +152,7 @@ export function DashboardToolbar({
   }
 
   function handleNext() {
-    if (!hasNextQuestion(questionIndex)) return;
+    if (!hasNextQuestionInGroup(groupId, questionIndex)) return;
 
     const nextIndex = questionIndex + 1;
 
@@ -194,15 +197,15 @@ export function DashboardToolbar({
           active={questionStarted}
           question={question}
           questionNumber={questionIndex + 1}
-          totalQuestions={getTotalQuestionCount()}
+          totalQuestions={getTotalQuestionCountForGroup(groupId)}
           onComplete={() => setQuestionDisplayed(true)}
         />
         {failed && solutionRevealReady ? (
           <DashboardQuestionSolutionReveal
             key={`${question.id}-solution-${sessionKey}`}
             question={question}
-            showNext={hasNextQuestion(questionIndex)}
-            showFinalResult={isLastQuestion(questionIndex)}
+            showNext={hasNextQuestionInGroup(groupId, questionIndex)}
+            showFinalResult={isLastQuestionInGroup(groupId, questionIndex)}
             onNext={handleNext}
             onShowFinalResult={handleShowFinalResult}
           />

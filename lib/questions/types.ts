@@ -14,3 +14,16 @@ export type CodingQuestion = {
   solution: QuestionSection[];
   validation: QuestionValidation;
 };
+
+export type QuestionGroupId =
+  | "map-filter-reduce"
+  | "search-and-sort"
+  | "aggregation-and-collections"
+  | "functional-javascript";
+
+export type QuestionGroup = {
+  id: QuestionGroupId;
+  label: string;
+  description: string;
+  questionIds: string[];
+};

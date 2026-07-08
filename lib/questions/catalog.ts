@@ -1,4 +1,5 @@
-import type { CodingQuestion } from "@/lib/questions/types";
+import { getQuestionGroupById } from "@/lib/questions/groups";
+import type { CodingQuestion, QuestionGroupId } from "@/lib/questions/types";
 
 const SOLUTION_INSTRUCTION =
   "Type your solution in solution.js. You have the option to run node in the terminal to test your work before you Check your Answer.";
@@ -1012,4 +1013,44 @@ export function getTotalQuestionCount(): number {
 
 export function isLastQuestion(index: number): boolean {
   return index >= CODING_QUESTIONS.length - 1;
+}
+
+function getGroupQuestions(groupId: QuestionGroupId): CodingQuestion[] {
+  const group = getQuestionGroupById(groupId);
+  if (!group) return [];
+
+  return group.questionIds
+    .map((id) => getQuestionById(id))
+    .filter((question): question is CodingQuestion => question !== undefined);
+}
+
+export function getQuestionsForGroup(groupId: QuestionGroupId): CodingQuestion[] {
+  return getGroupQuestions(groupId);
+}
+
+export function getQuestionAtIndexForGroup(
+  groupId: QuestionGroupId,
+  index: number,
+): CodingQuestion {
+  const questions = getGroupQuestions(groupId);
+  return questions[index] ?? questions[0];
+}
+
+export function hasNextQuestionInGroup(
+  groupId: QuestionGroupId,
+  index: number,
+): boolean {
+  return index + 1 < getGroupQuestions(groupId).length;
+}
+
+export function getTotalQuestionCountForGroup(groupId: QuestionGroupId): number {
+  return getGroupQuestions(groupId).length;
+}
+
+export function isLastQuestionInGroup(
+  groupId: QuestionGroupId,
+  index: number,
+): boolean {
+  const questions = getGroupQuestions(groupId);
+  return index >= questions.length - 1;
 }
