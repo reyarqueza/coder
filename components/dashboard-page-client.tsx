@@ -1,10 +1,13 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import { DashboardGroupMenu } from "@/components/dashboard-group-menu";
 import { DashboardIde } from "@/components/dashboard-ide";
 import { DashboardQuizResults } from "@/components/dashboard-quiz-results";
 import { DashboardToolbar } from "@/components/dashboard-toolbar";
-import { getTotalQuestionCount } from "@/lib/questions/catalog";
+import { getTotalQuestionCountForGroup } from "@/lib/questions/catalog";
+import { getQuestionGroupById } from "@/lib/questions/groups";
+import type { QuestionGroupId } from "@/lib/questions/types";
 import { resetTypewriterAudio } from "@/lib/beepbox/play-typewriter-blip";
 import { WorkspaceReadyProvider } from "@/components/workspace/workspace-ready-provider";
 
@@ -18,34 +21,65 @@ function DashboardFallback() {
   );
 }
 
+type DashboardPhase = "menu" | "quiz" | "results";
+
 type DashboardPageClientProps = {
   initialChallengeMinutes: number;
 };
 
 function DashboardContent({ initialChallengeMinutes }: DashboardPageClientProps) {
+  const [phase, setPhase] = useState<DashboardPhase>("menu");
+  const [selectedGroupId, setSelectedGroupId] = useState<QuestionGroupId | null>(
+    null,
+  );
+  const [quizKey, setQuizKey] = useState(0);
   const [started, setStarted] = useState(false);
-  const [showResults, setShowResults] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [challengeFailed, setChallengeFailed] = useState(false);
 
-  function handlePlayAgain() {
+  const selectedGroup = selectedGroupId
+    ? getQuestionGroupById(selectedGroupId)
+    : null;
+
+  function handleSelectGroup(groupId: QuestionGroupId) {
+    setSelectedGroupId(groupId);
+    setPhase("quiz");
+    setQuizKey((current) => current + 1);
+  }
+
+  function resetQuizState() {
     resetTypewriterAudio();
-    setShowResults(false);
     setCorrectCount(0);
     setStarted(false);
     setChallengeFailed(false);
   }
 
+  function handlePlayAgain() {
+    resetQuizState();
+    setQuizKey((current) => current + 1);
+    setPhase("quiz");
+  }
+
+  function handleChooseGroup() {
+    resetQuizState();
+    setSelectedGroupId(null);
+    setPhase("menu");
+  }
+
   return (
     <WorkspaceReadyProvider>
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        {showResults ? (
+        {phase === "menu" ? (
+          <DashboardGroupMenu onSelect={handleSelectGroup} />
+        ) : phase === "results" && selectedGroupId && selectedGroup ? (
           <DashboardQuizResults
+            groupLabel={selectedGroup.label}
             correctCount={correctCount}
-            total={getTotalQuestionCount()}
+            total={getTotalQuestionCountForGroup(selectedGroupId)}
             onPlayAgain={handlePlayAgain}
+            onChooseGroup={handleChooseGroup}
           />
-        ) : (
+        ) : selectedGroupId ? (
           <>
             <div
               className={
@@ -55,11 +89,13 @@ function DashboardContent({ initialChallengeMinutes }: DashboardPageClientProps)
               }
             >
               <DashboardToolbar
+                key={`${selectedGroupId}-${quizKey}`}
+                groupId={selectedGroupId}
                 initialChallengeMinutes={initialChallengeMinutes}
                 started={started}
                 onStartedChange={setStarted}
                 onCorrect={() => setCorrectCount((current) => current + 1)}
-                onShowResults={() => setShowResults(true)}
+                onShowResults={() => setPhase("results")}
                 onFailedChange={setChallengeFailed}
               />
             </div>
@@ -69,7 +105,7 @@ function DashboardContent({ initialChallengeMinutes }: DashboardPageClientProps)
               </div>
             ) : null}
           </>
-        )}
+        ) : null}
       </div>
     </WorkspaceReadyProvider>
   );
