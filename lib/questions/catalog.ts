@@ -881,6 +881,105 @@ console.log(getHighScorers(scores));`,
       },
     ],
   },
+  {
+    id: "closure-create-counter",
+    sections: [
+      {
+        type: "text",
+        content:
+          "Implement createCounter(start) that returns a function. Each call increments an internal count (starting at start) and returns the new value.",
+      },
+      {
+        type: "text",
+        content: SOLUTION_INSTRUCTION,
+      },
+    ],
+    validation: {
+      entryFile: "solution.js",
+      expectedStdout: "[13,2,3]",
+      normalize: "json",
+    },
+    solution: [
+      {
+        type: "text",
+        content:
+          "Use a closure to keep count private. The returned function increments count and returns the new value.",
+      },
+      {
+        type: "code",
+        content: `function createCounter(start) {
+  let count = start;
+  return function () {
+    count += 1;
+    return count;
+  };
+}
+
+const counterA = createCounter(10);
+const counterB = createCounter(0);
+counterA();
+counterA();
+counterB();
+console.log(JSON.stringify([counterA(), counterB(), counterB()]));`,
+      },
+    ],
+  },
+  {
+    id: "curry-generic",
+    sections: [
+      {
+        type: "text",
+        content:
+          "Implement curry(fn) so a function of any arity can be called as f(a)(b)(c) or with grouped args like f(a, b)(c).",
+      },
+      {
+        type: "code",
+        content: `function add(a, b, c) {
+  return a + b + c;
+}`,
+      },
+      {
+        type: "text",
+        content: SOLUTION_INSTRUCTION,
+      },
+    ],
+    validation: {
+      entryFile: "solution.js",
+      expectedStdout: '[6,6,6,"function","function"]',
+      normalize: "json",
+    },
+    solution: [
+      {
+        type: "text",
+        content:
+          "Return a curried wrapper that collects args until fn.length is reached, then calls the original function.",
+      },
+      {
+        type: "code",
+        content: `function add(a, b, c) {
+  return a + b + c;
+}
+
+function curry(fn) {
+  return function curried(...args) {
+    if (args.length >= fn.length) {
+      return fn(...args);
+    }
+    return (...next) => curried(...args, ...next);
+  };
+}
+
+const curriedAdd = curry(add);
+console.log(JSON.stringify([
+  curriedAdd(1)(2)(3),
+  curriedAdd(1, 2)(3),
+  curriedAdd(1)(2, 3),
+  typeof curriedAdd(1),
+  typeof curriedAdd(1)(2),
+]));`,
+      },
+    ],
+  },
 ];
 
 export function getQuestionById(id: string): CodingQuestion | undefined {
