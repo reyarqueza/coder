@@ -270,6 +270,40 @@ function getHighScorers(scores) {
 console.log(getHighScorers(scores));
 `,
   },
+  "closure-create-counter": {
+    path: "solution.js",
+    content: `function createCounter(start) {
+  // your code here
+}
+
+const counterA = createCounter(10);
+const counterB = createCounter(0);
+counterA();
+counterA();
+counterB();
+console.log(JSON.stringify([counterA(), counterB(), counterB()]));
+`,
+  },
+  "curry-generic": {
+    path: "solution.js",
+    content: `function add(a, b, c) {
+  return a + b + c;
+}
+
+function curry(fn) {
+  // your code here
+}
+
+const curriedAdd = curry(add);
+console.log(JSON.stringify([
+  curriedAdd(1)(2)(3),
+  curriedAdd(1, 2)(3),
+  curriedAdd(1)(2, 3),
+  typeof curriedAdd(1),
+  typeof curriedAdd(1)(2),
+]));
+`,
+  },
 };
 
 export async function seedQuestionStarterFile(
