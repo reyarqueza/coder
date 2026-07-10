@@ -36,13 +36,18 @@ function DashboardContent({ initialChallengeMinutes }: DashboardPageClientProps)
   const [started, setStarted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [challengeFailed, setChallengeFailed] = useState(false);
+  const [setupActive, setSetupActive] = useState(false);
 
   const selectedGroup = selectedGroupId
     ? getQuestionGroupById(selectedGroupId)
     : null;
+  const showIde = setupActive
+    ? !challengeFailed
+    : started && !challengeFailed;
 
   function handleSelectGroup(groupId: QuestionGroupId) {
     setSelectedGroupId(groupId);
+    setSetupActive(groupId === "react-hooks");
     setPhase("quiz");
     setQuizKey((current) => current + 1);
   }
@@ -52,6 +57,7 @@ function DashboardContent({ initialChallengeMinutes }: DashboardPageClientProps)
     setCorrectCount(0);
     setStarted(false);
     setChallengeFailed(false);
+    setSetupActive(false);
   }
 
   function handlePlayAgain() {
@@ -97,11 +103,12 @@ function DashboardContent({ initialChallengeMinutes }: DashboardPageClientProps)
                 onCorrect={() => setCorrectCount((current) => current + 1)}
                 onShowResults={() => setPhase("results")}
                 onFailedChange={setChallengeFailed}
+                onSetupActiveChange={setSetupActive}
               />
             </div>
-            {started && !challengeFailed ? (
+            {showIde ? (
               <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-                <DashboardIde />
+                <DashboardIde terminalOnly={setupActive} />
               </div>
             ) : null}
           </>

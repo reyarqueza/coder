@@ -3,8 +3,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { CodingQuestion } from "@/lib/questions/types";
+import { isReactPreviewValidation } from "@/lib/questions/types";
 import { primeOutcomeAudio } from "@/lib/beepbox/play-outcome-sound";
-import { validateAnswer } from "@/lib/questions/validate-answer";
+import {
+  validateAnswer,
+  validateReactPreview,
+} from "@/lib/questions/validate-answer";
 import { runNodeFile } from "@/lib/webcontainer/run-node-file";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
 
@@ -15,6 +19,14 @@ type DashboardCheckAnswerProps = {
   onIncorrect?: () => void;
   disabled?: boolean;
 };
+
+function getEntryPath(question: CodingQuestion): string {
+  const { validation } = question;
+  if (isReactPreviewValidation(validation)) {
+    return `${validation.appDir}/src/App.jsx`;
+  }
+  return validation.entryFile;
+}
 
 export function DashboardCheckAnswer({
   question,
@@ -32,22 +44,33 @@ export function DashboardCheckAnswer({
     primeOutcomeAudio();
     setChecking(true);
 
-    const { entryFile } = question.validation;
+    const entryPath = getEntryPath(question);
 
     try {
-      await webcontainer.fs.readFile(entryFile, "utf-8");
+      await webcontainer.fs.readFile(entryPath, "utf-8");
     } catch {
       setChecking(false);
       return;
     }
 
     try {
-      const runResult = await runNodeFile(webcontainer, entryFile);
-      const validation = validateAnswer(question, runResult);
-      if (validation.ok) {
-        onCorrect?.();
+      const { validation } = question;
+
+      if (isReactPreviewValidation(validation)) {
+        const result = await validateReactPreview(webcontainer, validation);
+        if (result.ok) {
+          onCorrect?.();
+        } else {
+          onIncorrect?.();
+        }
       } else {
-        onIncorrect?.();
+        const runResult = await runNodeFile(webcontainer, validation.entryFile);
+        const result = validateAnswer(question, runResult);
+        if (result.ok) {
+          onCorrect?.();
+        } else {
+          onIncorrect?.();
+        }
       }
     } catch {
     } finally {

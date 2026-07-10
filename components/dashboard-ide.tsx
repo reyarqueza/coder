@@ -5,7 +5,11 @@ import { WorkspacePanels } from "@/components/workspace/workspace-panels";
 import { useWebContainer } from "@/components/workspace/webcontainer-provider";
 import { syncWorkspaceUiFontSize } from "@/lib/workspace/colors";
 
-export function DashboardIde() {
+type DashboardIdeProps = {
+  terminalOnly?: boolean;
+};
+
+export function DashboardIde({ terminalOnly = false }: DashboardIdeProps) {
   const { status, error } = useWebContainer();
 
   useLayoutEffect(() => {
@@ -31,7 +35,7 @@ export function DashboardIde() {
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
-      <WorkspacePanels />
+      <WorkspacePanels terminalOnly={terminalOnly} />
     </div>
   );
 }

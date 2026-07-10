@@ -1,7 +1,10 @@
 import type { CodingQuestion } from "@/lib/questions/types";
 import type { WebContainer } from "@webcontainer/api";
 
-const STARTER_FILES: Record<string, { path: string; content: string }> = {
+type StarterFileSpec = { path: string; content: string };
+type StarterEntry = StarterFileSpec | { files: StarterFileSpec[] };
+
+const STARTER_FILES: Record<string, StarterEntry> = {
   "map-full-names": {
     path: "solution.js",
     content: `const users = [
@@ -304,7 +307,114 @@ console.log(JSON.stringify([
 ]));
 `,
   },
+
+  "react-use-state": {
+    files: [
+      {
+        path: "my-app/src/App.jsx",
+        content: `import { useState } from 'react';
+
+export default function App() {
+  // your code here
+  return (
+    <div>
+      {/* add a button and count display */}
+    </div>
+  );
+}
+`,
+      },
+    ],
+  },
+  "react-use-effect": {
+    files: [
+      {
+        path: "my-app/src/App.jsx",
+        content: `import { useEffect } from 'react';
+
+export default function App() {
+  // your code here
+  return <div>Quiz App</div>;
+}
+`,
+      },
+    ],
+  },
+  "react-use-ref": {
+    files: [
+      {
+        path: "my-app/src/App.jsx",
+        content: `import { useRef } from 'react';
+
+export default function App() {
+  // your code here
+  return (
+    <div>
+      {/* add a text input and a Focus button */}
+    </div>
+  );
+}
+`,
+      },
+    ],
+  },
+  "react-use-context": {
+    files: [
+      {
+        path: "my-app/src/App.jsx",
+        content: `import { createContext, useContext, useState } from 'react';
+
+// your code here
+
+export default function App() {
+  return (
+    <div>
+      {/* wrap with a theme context provider and toggle button */}
+      {/* background element should reflect the current theme */}
+    </div>
+  );
+}
+`,
+      },
+    ],
+  },
+  "react-use-reducer": {
+    files: [
+      {
+        path: "my-app/src/App.jsx",
+        content: `import { useReducer } from 'react';
+
+// your code here — define a reducer with increment, decrement, and reset actions
+
+export default function App() {
+  return (
+    <div>
+      {/* add buttons and display the count */}
+    </div>
+  );
+}
+`,
+      },
+    ],
+  },
 };
+
+function getStarterFileSpecs(entry: StarterEntry): StarterFileSpec[] {
+  if ("files" in entry) {
+    return entry.files;
+  }
+  return [entry];
+}
+
+async function ensureParentDir(
+  webcontainer: WebContainer,
+  filePath: string,
+): Promise<void> {
+  const parts = filePath.split("/");
+  if (parts.length <= 1) return;
+  const dir = parts.slice(0, -1).join("/");
+  await webcontainer.fs.mkdir(dir, { recursive: true });
+}
 
 export async function seedQuestionStarterFile(
   webcontainer: WebContainer,
@@ -314,15 +424,23 @@ export async function seedQuestionStarterFile(
   const starter = STARTER_FILES[question.id];
   if (!starter) return null;
 
+  const files = getStarterFileSpecs(starter);
+  const primaryPath = files[0]?.path ?? null;
+  if (!primaryPath) return null;
+
   if (!options?.force) {
     try {
-      await webcontainer.fs.readFile(starter.path, "utf-8");
-      return starter.path;
+      await webcontainer.fs.readFile(primaryPath, "utf-8");
+      return primaryPath;
     } catch {
       // file does not exist yet
     }
   }
 
-  await webcontainer.fs.writeFile(starter.path, starter.content);
-  return starter.path;
+  for (const file of files) {
+    await ensureParentDir(webcontainer, file.path);
+    await webcontainer.fs.writeFile(file.path, file.content);
+  }
+
+  return primaryPath;
 }
