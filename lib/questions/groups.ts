@@ -45,6 +45,19 @@ export const QUESTION_GROUPS: QuestionGroup[] = [
       "curry-generic",
     ],
   },
+  {
+    id: "react-hooks",
+    label: "React Hooks",
+    description: "Core React hooks with live preview",
+    defaultChallengeMinutes: 5,
+    questionIds: [
+      "react-use-state",
+      "react-use-effect",
+      "react-use-ref",
+      "react-use-context",
+      "react-use-reducer",
+    ],
+  },
 ];
 
 export function getAllQuestionGroups(): QuestionGroup[] {
@@ -59,4 +72,10 @@ export function getQuestionGroupById(
 
 export function getQuestionCountForGroup(id: QuestionGroupId): number {
   return getQuestionGroupById(id)?.questionIds.length ?? 0;
+}
+
+export function getDefaultChallengeMinutesForGroup(
+  id: QuestionGroupId,
+): number | undefined {
+  return getQuestionGroupById(id)?.defaultChallengeMinutes;
 }

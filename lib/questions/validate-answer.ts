@@ -1,4 +1,10 @@
-import type { CodingQuestion } from "@/lib/questions/types";
+import type {
+  CodingQuestion,
+  ReactPreviewValidation,
+  QuestionValidation,
+} from "@/lib/questions/types";
+import { isReactPreviewValidation } from "@/lib/questions/types";
+import type { WebContainer } from "@webcontainer/api";
 import type { NodeRunResult } from "@/lib/webcontainer/run-node-file";
 
 export type ValidateAnswerResult =
@@ -161,8 +167,55 @@ function compareTrim(stdout: string, expectedStdout: string): ValidateAnswerResu
   return { ok: true };
 }
 
-export function validateAnswer(
-  question: CodingQuestion,
+function stripComments(content: string): string {
+  return content
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/.*$/gm, "");
+}
+
+function stripImportLines(content: string): string {
+  return content.replace(/^import\s+.+$/gm, "");
+}
+
+/** Code body only — excludes imports and comments so scaffolds cannot false-pass. */
+export function getReactValidationSource(content: string): string {
+  return stripImportLines(stripComments(content));
+}
+
+export async function validateReactPreview(
+  webcontainer: WebContainer,
+  validation: ReactPreviewValidation,
+): Promise<ValidateAnswerResult> {
+  for (const check of validation.checks) {
+    if (check.kind === "file-contains") {
+      let content: string;
+      try {
+        content = await webcontainer.fs.readFile(check.path, "utf-8");
+      } catch {
+        return {
+          ok: false,
+          message: `File not found: ${check.path}. Make sure your Vite app is set up at ${validation.appDir}.`,
+        };
+      }
+
+      const source = getReactValidationSource(content);
+
+      for (const pattern of check.patterns) {
+        if (!source.includes(pattern)) {
+          return {
+            ok: false,
+            message: `Expected to find "${pattern}" in ${check.path}.`,
+          };
+        }
+      }
+    }
+  }
+
+  return { ok: true };
+}
+
+export function validateStdoutAnswer(
+  validation: QuestionValidation,
   result: NodeRunResult,
 ): ValidateAnswerResult {
   if (result.exitCode !== 0) {
@@ -174,7 +227,10 @@ export function validateAnswer(
     };
   }
 
-  const { validation } = question;
+  if (isReactPreviewValidation(validation)) {
+    return { ok: false, message: "Invalid validation configuration." };
+  }
+
   const normalize = validation.normalize ?? "trim";
 
   if (normalize === "json") {
@@ -182,4 +238,11 @@ export function validateAnswer(
   }
 
   return compareTrim(result.stdout, validation.expectedStdout);
+}
+
+export function validateAnswer(
+  question: CodingQuestion,
+  result: NodeRunResult,
+): ValidateAnswerResult {
+  return validateStdoutAnswer(question.validation, result);
 }

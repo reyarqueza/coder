@@ -4,6 +4,9 @@ import type { CodingQuestion, QuestionGroupId } from "@/lib/questions/types";
 const SOLUTION_INSTRUCTION =
   "Type your solution in solution.js. You have the option to run node in the terminal to test your work before you Check your Answer.";
 
+const REACT_SOLUTION_INSTRUCTION =
+  "Edit my-app/src/App.jsx. Click Begin to load the starter file, then use the preview panel to verify your work before you Check your Answer.";
+
 export const CODING_QUESTIONS: CodingQuestion[] = [
   {
     id: "map-full-names",
@@ -978,6 +981,290 @@ console.log(JSON.stringify([
   typeof curriedAdd(1),
   typeof curriedAdd(1)(2),
 ]));`,
+      },
+    ],
+  },
+  {
+    id: "react-use-state",
+    sections: [
+      {
+        type: "text",
+        content:
+          "Using useState, build a counter. Clicking a button increments the count. Display the current count in an element with data-testid=\"count\".",
+      },
+      {
+        type: "text",
+        content: REACT_SOLUTION_INSTRUCTION,
+      },
+    ],
+    validation: {
+      type: "react-preview",
+      appDir: "my-app",
+      checks: [
+        {
+          kind: "file-contains",
+          path: "my-app/src/App.jsx",
+          patterns: ["useState(", 'data-testid="count"'],
+        },
+      ],
+    },
+    solution: [
+      {
+        type: "text",
+        content:
+          "Use useState(0) for the count. Increment on button click and render the count inside an element with data-testid=\"count\".",
+      },
+      {
+        type: "code",
+        content: `import { useState } from 'react';
+
+export default function App() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <button type="button" onClick={() => setCount((c) => c + 1)}>
+        Increment
+      </button>
+      <span data-testid="count">{count}</span>
+    </div>
+  );
+}`,
+      },
+    ],
+  },
+  {
+    id: "react-use-effect",
+    sections: [
+      {
+        type: "text",
+        content:
+          'Using useEffect, set document.title to "Quiz App" when the component mounts.',
+      },
+      {
+        type: "text",
+        content: REACT_SOLUTION_INSTRUCTION,
+      },
+    ],
+    validation: {
+      type: "react-preview",
+      appDir: "my-app",
+      checks: [
+        {
+          kind: "file-contains",
+          path: "my-app/src/App.jsx",
+          patterns: ["useEffect(", "document.title"],
+        },
+      ],
+    },
+    solution: [
+      {
+        type: "text",
+        content:
+          "Call useEffect with an empty dependency array so the title is set once on mount.",
+      },
+      {
+        type: "code",
+        content: `import { useEffect } from 'react';
+
+export default function App() {
+  useEffect(() => {
+    document.title = 'Quiz App';
+  }, []);
+
+  return <div>Quiz App</div>;
+}`,
+      },
+    ],
+  },
+  {
+    id: "react-use-ref",
+    sections: [
+      {
+        type: "text",
+        content:
+          "Using useRef, create a text input and a Focus button. Clicking the button should call focus() on the input.",
+      },
+      {
+        type: "text",
+        content: REACT_SOLUTION_INSTRUCTION,
+      },
+    ],
+    validation: {
+      type: "react-preview",
+      appDir: "my-app",
+      checks: [
+        {
+          kind: "file-contains",
+          path: "my-app/src/App.jsx",
+          patterns: ["useRef(", ".focus("],
+        },
+      ],
+    },
+    solution: [
+      {
+        type: "text",
+        content:
+          "Store the input element in a ref and call inputRef.current.focus() when the button is clicked.",
+      },
+      {
+        type: "code",
+        content: `import { useRef } from 'react';
+
+export default function App() {
+  const inputRef = useRef(null);
+
+  return (
+    <div>
+      <input ref={inputRef} type="text" />
+      <button type="button" onClick={() => inputRef.current?.focus()}>
+        Focus
+      </button>
+    </div>
+  );
+}`,
+      },
+    ],
+  },
+  {
+    id: "react-use-context",
+    sections: [
+      {
+        type: "text",
+        content:
+          'Create a ThemeContext with light and dark themes. Use useContext to read the theme. A button toggles between themes. The background wrapper should have data-testid="theme-bg" and change color based on the theme.',
+      },
+      {
+        type: "text",
+        content: REACT_SOLUTION_INSTRUCTION,
+      },
+    ],
+    validation: {
+      type: "react-preview",
+      appDir: "my-app",
+      checks: [
+        {
+          kind: "file-contains",
+          path: "my-app/src/App.jsx",
+          patterns: [
+            "createContext(",
+            "useContext(",
+            'data-testid="theme-bg"',
+          ],
+        },
+      ],
+    },
+    solution: [
+      {
+        type: "text",
+        content:
+          "Define ThemeContext with createContext, provide the value from App, and consume it in a child component to set the background style.",
+      },
+      {
+        type: "code",
+        content: `import { createContext, useContext, useState } from 'react';
+
+const ThemeContext = createContext('light');
+
+function ThemeBackground() {
+  const theme = useContext(ThemeContext);
+  const background = theme === 'dark' ? '#222' : '#fff';
+
+  return (
+    <div data-testid="theme-bg" style={{ background, padding: '1rem' }}>
+      Theme: {theme}
+    </div>
+  );
+}
+
+export default function App() {
+  const [theme, setTheme] = useState('light');
+
+  return (
+    <ThemeContext.Provider value={theme}>
+      <button
+        type="button"
+        onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}
+      >
+        Toggle theme
+      </button>
+      <ThemeBackground />
+    </ThemeContext.Provider>
+  );
+}`,
+      },
+    ],
+  },
+  {
+    id: "react-use-reducer",
+    sections: [
+      {
+        type: "text",
+        content:
+          "Using useReducer, build a counter with INCREMENT, DECREMENT, and RESET actions. Display the count in an element with data-testid=\"count\".",
+      },
+      {
+        type: "text",
+        content: REACT_SOLUTION_INSTRUCTION,
+      },
+    ],
+    validation: {
+      type: "react-preview",
+      appDir: "my-app",
+      checks: [
+        {
+          kind: "file-contains",
+          path: "my-app/src/App.jsx",
+          patterns: [
+            "useReducer(",
+            "'INCREMENT'",
+            "'DECREMENT'",
+            "'RESET'",
+          ],
+        },
+      ],
+    },
+    solution: [
+      {
+        type: "text",
+        content:
+          "Define a reducer function that handles INCREMENT, DECREMENT, and RESET action types, then dispatch actions from button clicks.",
+      },
+      {
+        type: "code",
+        content: `import { useReducer } from 'react';
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'INCREMENT':
+      return state + 1;
+    case 'DECREMENT':
+      return state - 1;
+    case 'RESET':
+      return 0;
+    default:
+      return state;
+  }
+}
+
+export default function App() {
+  const [count, dispatch] = useReducer(reducer, 0);
+
+  return (
+    <div>
+      <span data-testid="count">{count}</span>
+      <button type="button" onClick={() => dispatch({ type: 'INCREMENT' })}>
+        +
+      </button>
+      <button type="button" onClick={() => dispatch({ type: 'DECREMENT' })}>
+        -
+      </button>
+      <button type="button" onClick={() => dispatch({ type: 'RESET' })}>
+        Reset
+      </button>
+    </div>
+  );
+}`,
       },
     ],
   },

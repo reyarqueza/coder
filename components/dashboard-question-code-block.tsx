@@ -28,11 +28,13 @@ function syncEditorHeight(view: EditorView) {
 type DashboardQuestionCodeBlockProps = {
   content: string;
   className?: string;
+  lineNumbers?: boolean;
 };
 
 export function DashboardQuestionCodeBlock({
   content,
   className,
+  lineNumbers = true,
 }: DashboardQuestionCodeBlockProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
@@ -42,7 +44,9 @@ export function DashboardQuestionCodeBlock({
 
     const view = new EditorView({
       parent: containerRef.current,
-      state: createQuestionExampleEditorState(content, [questionCodeLayoutTheme]),
+      state: createQuestionExampleEditorState(content, [questionCodeLayoutTheme], {
+        lineNumbers,
+      }),
     });
 
     syncEditorHeight(view);
@@ -52,7 +56,7 @@ export function DashboardQuestionCodeBlock({
       view.destroy();
       viewRef.current = null;
     };
-  }, []);
+  }, [lineNumbers]);
 
   useEffect(() => {
     const view = viewRef.current;

@@ -7,6 +7,7 @@ import { DashboardChallengeMinutesControl } from "@/components/dashboard-challen
 import { DashboardChallengeTimer } from "@/components/dashboard-challenge-timer";
 import { DashboardMusicPlayer } from "@/components/dashboard-music-player";
 import { DashboardQuestionPrompt } from "@/components/dashboard-question-prompt";
+import { DashboardGroupSetup } from "@/components/dashboard-group-setup";
 import { DashboardQuestionSolutionReveal } from "@/components/dashboard-question-solution-reveal";
 import { FieldSet } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import {
   hasNextQuestionInGroup,
   isLastQuestionInGroup,
 } from "@/lib/questions/catalog";
+import { getDefaultChallengeMinutesForGroup } from "@/lib/questions/groups";
 import type { QuestionGroupId } from "@/lib/questions/types";
 import { seedQuestionStarterFile } from "@/lib/questions/starter-files";
 import { primeTypewriterAudio, setTypewriterAudioEnabled } from "@/lib/beepbox/play-typewriter-blip";
@@ -39,6 +41,7 @@ type DashboardToolbarProps = {
   onCorrect: () => void;
   onShowResults: () => void;
   onFailedChange?: (failed: boolean) => void;
+  onSetupActiveChange?: (active: boolean) => void;
 };
 
 export function DashboardToolbar({
@@ -49,6 +52,7 @@ export function DashboardToolbar({
   onCorrect,
   onShowResults,
   onFailedChange,
+  onSetupActiveChange,
 }: DashboardToolbarProps) {
   const { workspaceReady } = useWorkspaceReady();
   const { webcontainer, status, setSelectedPath, refreshFiles } =
@@ -59,11 +63,11 @@ export function DashboardToolbar({
   const [solutionComplete, setSolutionComplete] = useState(false);
   const [failed, setFailed] = useState(false);
   const [solutionRevealReady, setSolutionRevealReady] = useState(false);
-  const [challengeMinutes, setChallengeMinutes] = useState(
-    initialChallengeMinutes,
-  );
+  const groupDefaultMinutes =
+    getDefaultChallengeMinutesForGroup(groupId) ?? initialChallengeMinutes;
+  const [challengeMinutes, setChallengeMinutes] = useState(groupDefaultMinutes);
   const [secondsRemaining, setSecondsRemaining] = useState(() =>
-    challengeMinutesToSeconds(initialChallengeMinutes),
+    challengeMinutesToSeconds(groupDefaultMinutes),
   );
   const [questionIndex, setQuestionIndex] = useState(0);
   const [sessionKey, setSessionKey] = useState(0);
@@ -75,6 +79,19 @@ export function DashboardToolbar({
     (failed || solutionComplete) && isLastQuestionInGroup(groupId, questionIndex);
   const showStartButton = questionIndex === 0 && !questionStarted;
   const challengeActive = started && !failed && !solutionComplete;
+  const isReactHooksGroup = groupId === "react-hooks";
+  const showSetup = isReactHooksGroup && !questionStarted;
+
+  useEffect(() => {
+    onSetupActiveChange?.(showSetup);
+  }, [showSetup, onSetupActiveChange]);
+
+  useEffect(() => {
+    if (isReactHooksGroup && showSetup) {
+      primeTypewriterAudio();
+      setTypewriterAudioEnabled(true);
+    }
+  }, [isReactHooksGroup, showSetup]);
 
   useEffect(() => {
     if (!started) {
@@ -191,15 +208,24 @@ export function DashboardToolbar({
     <FieldSet
       className={cn("w-full", failed && "flex min-h-0 flex-1 flex-col gap-0")}
     >
-      <div className={cn(failed && "min-h-0 flex-1 overflow-y-auto")}>
-        <DashboardQuestionPrompt
-          key={`${question.id}-${sessionKey}`}
-          active={questionStarted}
-          question={question}
-          questionNumber={questionIndex + 1}
-          totalQuestions={getTotalQuestionCountForGroup(groupId)}
-          onComplete={() => setQuestionDisplayed(true)}
-        />
+      <div
+        className={cn(
+          failed && "min-h-0 flex-1 overflow-y-auto",
+          showSetup && "max-h-[38vh] overflow-y-auto",
+        )}
+      >
+        {showSetup ? (
+          <DashboardGroupSetup active={showSetup} />
+        ) : (
+          <DashboardQuestionPrompt
+            key={`${question.id}-${sessionKey}`}
+            active={questionStarted}
+            question={question}
+            questionNumber={questionIndex + 1}
+            totalQuestions={getTotalQuestionCountForGroup(groupId)}
+            onComplete={() => setQuestionDisplayed(true)}
+          />
+        )}
         {failed && solutionRevealReady ? (
           <DashboardQuestionSolutionReveal
             key={`${question.id}-solution-${sessionKey}`}

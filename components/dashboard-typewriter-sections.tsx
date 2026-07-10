@@ -41,6 +41,7 @@ function renderVisibleSections(
         <DashboardQuestionCodeBlock
           key={`${sectionKey}-section-${index}`}
           content={text}
+          lineNumbers={section.lineNumbers}
         />
       );
     }

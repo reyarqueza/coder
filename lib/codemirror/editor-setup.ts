@@ -96,11 +96,14 @@ const questionExampleEditorTheme = EditorView.theme({
 export function createQuestionExampleEditorState(
   doc: string,
   extraExtensions: Extension[] = [],
+  options?: { lineNumbers?: boolean },
 ) {
+  const showLineNumbers = options?.lineNumbers !== false;
+
   return EditorState.create({
     doc,
     extensions: [
-      lineNumbers(),
+      ...(showLineNumbers ? [lineNumbers()] : []),
       highlightActiveLine(),
       highlightSpecialChars(),
       syntaxHighlighting(webcontainerHighlightStyle),
