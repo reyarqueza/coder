@@ -46,7 +46,7 @@ export function DashboardQuizResults({
           Play Again
         </Button>
         <Button type="button" variant="outline" onClick={onChooseGroup}>
-          Choose Group
+          Back to Menu
         </Button>
       </div>
     </div>
