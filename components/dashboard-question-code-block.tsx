@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { EditorView } from "@codemirror/view";
 import { createQuestionExampleEditorState } from "@/lib/codemirror/editor-setup";
+import { scrollParentOnWheelExtension } from "@/lib/codemirror/scroll-parent-wheel";
 import { cn } from "@/lib/utils";
 
 const questionCodeLayoutTheme = EditorView.theme({
@@ -44,9 +45,11 @@ export function DashboardQuestionCodeBlock({
 
     const view = new EditorView({
       parent: containerRef.current,
-      state: createQuestionExampleEditorState(content, [questionCodeLayoutTheme], {
-        lineNumbers,
-      }),
+      state: createQuestionExampleEditorState(
+        content,
+        [questionCodeLayoutTheme, scrollParentOnWheelExtension()],
+        { lineNumbers },
+      ),
     });
 
     syncEditorHeight(view);

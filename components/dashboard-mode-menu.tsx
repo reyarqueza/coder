@@ -7,40 +7,40 @@ import {
   primeTypewriterAudio,
 } from "@/lib/beepbox/play-typewriter-blip";
 import { pressStart2P } from "@/lib/fonts/press-start-2p";
-import { getAllQuestionGroups } from "@/lib/questions/groups";
-import type { QuestionGroupId } from "@/lib/questions/types";
 import type { SessionMode } from "@/lib/session/mode";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-type DashboardGroupMenuProps = {
-  mode: SessionMode;
-  onSelect: (groupId: QuestionGroupId) => void;
-  onBack: () => void;
+const MODES: { id: SessionMode; label: string; description: string }[] = [
+  {
+    id: "practice",
+    label: "Practice Mode",
+    description: "Read questions and answers, practice at your own pace",
+  },
+  {
+    id: "challenge",
+    label: "Challenge Mode",
+    description: "Timed test — answer before the clock runs out",
+  },
+];
+
+type DashboardModeMenuProps = {
+  onSelect: (mode: SessionMode) => void;
 };
 
-export function DashboardGroupMenu({
-  mode,
-  onSelect,
-  onBack,
-}: DashboardGroupMenuProps) {
-  const groups = getAllQuestionGroups();
+export function DashboardModeMenu({ onSelect }: DashboardModeMenuProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const listRef = useRef<HTMLUListElement>(null);
 
-  const moveSelection = useCallback(
-    (delta: number) => {
-      setSelectedIndex((current) => {
-        const next = Math.max(0, Math.min(groups.length - 1, current + delta));
-        if (next !== current) {
-          primeTypewriterAudio();
-          playTypewriterBlip();
-        }
-        return next;
-      });
-    },
-    [groups.length],
-  );
+  const moveSelection = useCallback((delta: number) => {
+    setSelectedIndex((current) => {
+      const next = Math.max(0, Math.min(MODES.length - 1, current + delta));
+      if (next !== current) {
+        primeTypewriterAudio();
+        playTypewriterBlip();
+      }
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     listRef.current?.focus();
@@ -55,7 +55,7 @@ export function DashboardGroupMenu({
       moveSelection(1);
     } else if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      onSelect(groups[selectedIndex].id);
+      onSelect(MODES[selectedIndex].id);
     }
   }
 
@@ -68,26 +68,25 @@ export function DashboardGroupMenu({
           "text-center text-sm leading-relaxed text-foreground",
         )}
       >
-        {mode === "practice" ? "Choose a topic" : "Choose a challenge"}
+        Choose a mode
       </p>
       <ul
         ref={listRef}
         role="listbox"
-        aria-label="Question groups"
+        aria-label="Session modes"
         tabIndex={0}
         onKeyDown={handleKeyDown}
         className="flex w-full max-w-md flex-col gap-2 outline-none"
       >
-        {groups.map((group, index) => {
+        {MODES.map((mode, index) => {
           const isSelected = index === selectedIndex;
-          const count = group.questionIds.length;
 
           return (
             <li
-              key={group.id}
+              key={mode.id}
               role="option"
               aria-selected={isSelected}
-              onClick={() => onSelect(group.id)}
+              onClick={() => onSelect(mode.id)}
               onMouseEnter={() => setSelectedIndex(index)}
               className={cn(
                 "cursor-pointer rounded-lg border px-4 py-3 transition-colors",
@@ -103,18 +102,15 @@ export function DashboardGroupMenu({
                   isSelected ? "text-foreground" : "text-muted-foreground",
                 )}
               >
-                {group.label} ({count})
+                {mode.label}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                {group.description}
+                {mode.description}
               </p>
             </li>
           );
         })}
       </ul>
-      <Button type="button" variant="outline" onClick={onBack}>
-        Back
-      </Button>
     </div>
   );
 }

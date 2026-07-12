@@ -72,6 +72,7 @@ export function DashboardToolbar({
   const [questionIndex, setQuestionIndex] = useState(0);
   const [sessionKey, setSessionKey] = useState(0);
   const failSequenceRef = useRef(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const question = getQuestionAtIndexForGroup(groupId, questionIndex);
   const showNext =
     (failed || solutionComplete) && hasNextQuestionInGroup(groupId, questionIndex);
@@ -185,6 +186,7 @@ export function DashboardToolbar({
     onStartedChange(false);
     setSelectedPath(null);
     setSessionKey((current) => current + 1);
+    scrollRef.current?.scrollTo({ top: 0 });
 
     if (nextIndex > 0) {
       primeTypewriterAudio();
@@ -204,15 +206,15 @@ export function DashboardToolbar({
     onShowResults();
   }
 
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0 });
+  }, [question.id, sessionKey]);
+
   return (
-    <FieldSet
-      className={cn("w-full", failed && "flex min-h-0 flex-1 flex-col gap-0")}
-    >
+    <FieldSet className="flex min-h-0 flex-1 flex-col gap-2">
       <div
-        className={cn(
-          failed && "min-h-0 flex-1 overflow-y-auto",
-          showSetup && "max-h-[38vh] overflow-y-auto",
-        )}
+        ref={scrollRef}
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
       >
         {showSetup ? (
           <DashboardGroupSetup active={showSetup} />
@@ -238,7 +240,7 @@ export function DashboardToolbar({
         ) : null}
       </div>
       {failed ? null : (
-      <div className="flex w-full items-end gap-4">
+      <div className="flex shrink-0 w-full items-end gap-4 pt-2">
         <div className="flex shrink-0 items-end gap-2">
           <DashboardChallengeMinutesControl
             value={challengeMinutes}
