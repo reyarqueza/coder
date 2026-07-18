@@ -33,10 +33,18 @@ export default function LoginPage() {
           <CardHeader>
             <CardTitle>Sign in</CardTitle>
             <CardDescription>
-              Sign in with GitHub to start practicing.
+              Sign in with GitHub to start practicing on{" "}
+              <span className="font-medium text-foreground">
+                coder.bahamuto.com
+              </span>
+              .
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              You will be redirected to GitHub to authorize access. This site
+              does not ask for your password.
+            </p>
             <LoginForm />
           </CardContent>
         </Card>
